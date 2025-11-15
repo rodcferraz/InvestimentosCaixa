@@ -1,7 +1,7 @@
 ﻿using InvestimentosCaixa.Api.Dominio.Entidades;
 using InvestimentosCaixa.Api.Dominio.Repositorios.Interfaces;
 using InvestimentosCaixa.Api.Infraestrutura.Data.Context;
-using InvestimentosCaixa.Api.Infraestrutura.Repossitorios;
+using InvestimentosCaixa.Api.Infraestrutura.Repositorios;
 using Microsoft.EntityFrameworkCore;
 
 namespace InvestimentosCaixa.Api.Infraestrutura.Repositorios

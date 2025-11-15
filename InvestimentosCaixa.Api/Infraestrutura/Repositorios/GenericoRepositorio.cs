@@ -2,7 +2,7 @@
 using InvestimentosCaixa.Api.Infraestrutura.Data.Context;
 using Microsoft.EntityFrameworkCore;
 
-namespace InvestimentosCaixa.Api.Infraestrutura.Repossitorios
+namespace InvestimentosCaixa.Api.Infraestrutura.Repositorios
 {
     public class GenericoRepositorio<T> : IGenericoRepositorio<T> where T : class
     {
@@ -27,7 +27,7 @@ namespace InvestimentosCaixa.Api.Infraestrutura.Repossitorios
             await _context.SaveChangesAsync();
         }
 
-        public async Task<List<T>> ListarTodosAsync()
+        public virtual async Task<List<T>> ListarTodosAsync()
         {
             return await _dbSet.ToListAsync();
         }

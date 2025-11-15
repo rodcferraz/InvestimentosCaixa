@@ -2,23 +2,24 @@
 
 namespace InvestimentosCaixa.Api.Dominio.Entidades
 {
-    public class Produto
+    public class Simulacao
     {
         [Key]
         public int Id { get; set; }
         [Required]
-        [StringLength(15)]
-        public string Nome { get; set; }
+        public int IdCliente { get; set; }
         [Required]
-        public int Tipo { get; set; }
+        public int IdProduto { get; set; }
         [Required]
-        public decimal Rentabilidade { get; set; }
+        public decimal ValorInvestido { get; set; }
         [Required]
-        public int Risco { get; set; }
-        public bool Ativo { get; set; } = true;
+        public decimal ValorFinal { get; set; }
+        [Required]
+        public int PrazoMeses { get; set; }
+        public DateTime DataSimulacao { get; set; }
         public virtual ICollection<SimulacaoCliente> SimulacoesCliente { get; set; }
 
-        public Produto()
+        public Simulacao()
         {
             SimulacoesCliente = new HashSet<SimulacaoCliente>();
         }

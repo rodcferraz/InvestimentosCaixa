@@ -1,7 +1,6 @@
 ﻿using InvestimentosCaixa.Api.Dominio.Entidades;
 using InvestimentosCaixa.Api.Dominio.Repositorios.Interfaces;
 using InvestimentosCaixa.Api.Infraestrutura.Data.Context;
-using InvestimentosCaixa.Api.Infraestrutura.Repossitorios;
 using Microsoft.EntityFrameworkCore;
 
 namespace InvestimentosCaixa.Api.Infraestrutura.Repositorios
@@ -22,6 +21,13 @@ namespace InvestimentosCaixa.Api.Infraestrutura.Repositorios
                         .FirstOrDefaultAsync(p =>
                             p.Nome.Equals(nomeProduto, StringComparison.OrdinalIgnoreCase));
 
+        }
+
+        public async Task<Produto?> ListarProdutoPorTipo(int tipoProduto)
+        {
+            return await _context.Produtos
+                        .FirstOrDefaultAsync(p =>
+                            p.Tipo == tipoProduto);
         }
     }
 }

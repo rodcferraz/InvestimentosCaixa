@@ -69,6 +69,23 @@ namespace InvestimentosCaixa.Api.Dominio.Servicos
             return _produtoMapper.ToDtoResponse(produtoDb);
         }
 
+        public async Task<ProdutoDTOResponse?> ListarProdutoAtivoPorTipoAsync(string tipoProduto)
+        {
+            if (!Enum.TryParse(tipoProduto, out TipoProduto TipoProduto))
+            {
+                throw new ConvertEnumException(typeof(TipoProduto), tipoProduto);
+            }
+
+            var produtoDb = await _produtoRepositorio.ListarProdutoPorTipo((int)TipoProduto);
+
+            if (produtoDb == null)
+            {
+                return null;
+            }
+
+            return _produtoMapper.ToDtoResponse(produtoDb);
+        }
+
         public async Task<List<ProdutoDTOResponse>?> ListarTodosProdutosAtivosAsync()
         {
             var produtos = await _produtoRepositorio.ListarTodosAsync();

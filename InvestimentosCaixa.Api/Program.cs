@@ -1,3 +1,4 @@
+using InvestimentosCaixa.Api.Dominio.Filtros;
 using InvestimentosCaixa.Api.Dominio.Mappers;
 using InvestimentosCaixa.Api.Dominio.Mappers.Interfaces;
 using InvestimentosCaixa.Api.Dominio.Repositorios.Interfaces;
@@ -5,7 +6,6 @@ using InvestimentosCaixa.Api.Dominio.Servicos;
 using InvestimentosCaixa.Api.Dominio.Servicos.Interfaces;
 using InvestimentosCaixa.Api.Infraestrutura.Data.Context;
 using InvestimentosCaixa.Api.Infraestrutura.Repositorios;
-using InvestimentosCaixa.Api.Infraestrutura.Repossitorios;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -64,6 +64,8 @@ namespace InvestimentosCaixa.Api
                     return new BadRequestObjectResult(erros);
                 };
             });
+
+            builder.Services.AddScoped<ValidarSimulacaoFiltro>();
 
             builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
             .AddJwtBearer(options =>

@@ -10,5 +10,6 @@ namespace InvestimentosCaixa.Api.Dominio.Servicos.Interfaces
         Task<ProdutoDTOResponse?> AtualizarProdutoAsync(ProdutoDTORequest produtoDto);
         Task<bool> RemoverProdutoAsync(int idAluno);
         Task<ProdutoDTOResponse?> ListarProdutoAtivoPorNomeAsync(string nomeProduto);
+        Task<ProdutoDTOResponse?> ListarProdutoAtivoPorTipoAsync(string tipoProduto);
     }
 }
