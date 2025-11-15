@@ -3,12 +3,12 @@
     public class ConvertEnumException : Exception
     {
         public ConvertEnumException(Type tipoEnum, object valorInvalido) 
-            : base(MensagemErro(tipoEnum, valorInvalido))
+            : base(MensagemErroConverEnum(tipoEnum, valorInvalido))
         {
 
         }
 
-        public static string MensagemErro(Type tipoEnum, object valorInvalido)
+        public static string MensagemErroConverEnum(Type tipoEnum, object valorInvalido)
         {
             var valorValido = Enum.GetValues(tipoEnum);
             var valoresString = valorValido.Cast<object>().Select(v => $"{v} ({(int)v})");

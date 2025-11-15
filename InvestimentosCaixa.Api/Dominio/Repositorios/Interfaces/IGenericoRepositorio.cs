@@ -2,10 +2,10 @@
 {
     public interface IGenericoRepositorio<T> where T : class
     {
-        Task<T?> ListarPorId(int id);
-        Task<List<T>> ListarTodos();
-        Task Adicionar(T entidade);
-        Task<T> Atualizar(T entidade);
-        Task Deletar(T entidade);
+        Task<T?> ListarPorIdAsync(int id);
+        Task<List<T>> ListarTodosAsync();
+        Task AdicionarAsync(T entidade);
+        Task<T> AtualizarAsync(T entidade);
+        Task DeletarAsync(T entidade);
     }
 }

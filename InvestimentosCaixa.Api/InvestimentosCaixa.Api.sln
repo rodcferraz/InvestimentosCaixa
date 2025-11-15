@@ -5,6 +5,8 @@ VisualStudioVersion = 17.14.36121.58 d17.14
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "InvestimentosCaixa.Api", "InvestimentosCaixa.Api.csproj", "{8D45F972-CC32-4435-874D-0D9B07B69647}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "InvestimentosCaixa.Testes", "..\InvestimentosCaixa.Testes\InvestimentosCaixa.Testes.csproj", "{87BA807F-AB42-44E9-A55F-1C79AC8BE391}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -15,6 +17,10 @@ Global
 		{8D45F972-CC32-4435-874D-0D9B07B69647}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{8D45F972-CC32-4435-874D-0D9B07B69647}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{8D45F972-CC32-4435-874D-0D9B07B69647}.Release|Any CPU.Build.0 = Release|Any CPU
+		{87BA807F-AB42-44E9-A55F-1C79AC8BE391}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{87BA807F-AB42-44E9-A55F-1C79AC8BE391}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{87BA807F-AB42-44E9-A55F-1C79AC8BE391}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{87BA807F-AB42-44E9-A55F-1C79AC8BE391}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

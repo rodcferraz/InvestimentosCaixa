@@ -11,5 +11,6 @@ namespace InvestimentosCaixa.Api.Infraestrutura.Data.Context
         }
 
         public DbSet<Produto> Produtos => Set<Produto>();
+        public DbSet<Cliente> Clientes => Set<Cliente>();
     }
 }

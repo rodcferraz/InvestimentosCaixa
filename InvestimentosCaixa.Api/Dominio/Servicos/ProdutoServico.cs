@@ -19,16 +19,16 @@ namespace InvestimentosCaixa.Api.Dominio.Servicos
             _produtoRepositorio = produtoRepositorio;
         }
 
-        public async Task AdicionarProduto(ProdutoDTOBaseRequest produtoDto)
+        public async Task AdicionarProdutoAsync(ProdutoDTOBaseRequest produtoDto)
         {
             var produtoDb = _produtoMapper.ToBaseEntity(produtoDto);
 
-            await _produtoRepositorio.Adicionar(produtoDb);
+            await _produtoRepositorio.AdicionarAsync(produtoDb);
         }
 
-        public async Task<ProdutoDTOResponse?> AtualizarProduto(ProdutoDTORequest produtoDto)
+        public async Task<ProdutoDTOResponse?> AtualizarProdutoAsync(ProdutoDTORequest produtoDto)
         {
-            var produtoDb = await _produtoRepositorio.ListarPorId(produtoDto.Id);
+            var produtoDb = await _produtoRepositorio.ListarPorIdAsync(produtoDto.Id);
 
             if (produtoDb == null)
                 return null;
@@ -48,20 +48,20 @@ namespace InvestimentosCaixa.Api.Dominio.Servicos
             produtoDb.Risco = (int) riscoProduto;
             produtoDb.Tipo =(int) tipoProduto;
 
-            var produtoAtualizado = await _produtoRepositorio.Atualizar(produtoDb);
+            var produtoAtualizado = await _produtoRepositorio.AtualizarAsync(produtoDb);
 
             return _produtoMapper.ToDtoResponse(produtoAtualizado);
         }
 
-        public async Task<ProdutoDTOResponse?> DetalhesProduto(int id)
+        public async Task<ProdutoDTOResponse?> DetalhesProdutoAsync(int id)
         {
-            var produto = await _produtoRepositorio.ListarPorId(id);
+            var produto = await _produtoRepositorio.ListarPorIdAsync(id);
             if (produto == null)
                 return null;
             return _produtoMapper.ToDtoResponse(produto);
         }
 
-        public async Task<ProdutoDTOResponse?> ListarProdutoAtivoPorNome(string nomeProduto)
+        public async Task<ProdutoDTOResponse?> ListarProdutoAtivoPorNomeAsync(string nomeProduto)
         {
             var produtoDb = await _produtoRepositorio.ListarProdutoPorNome(nomeProduto);
             if (produtoDb == null || produtoDb.Ativo == false)
@@ -69,9 +69,9 @@ namespace InvestimentosCaixa.Api.Dominio.Servicos
             return _produtoMapper.ToDtoResponse(produtoDb);
         }
 
-        public async Task<List<ProdutoDTOResponse>?> ListarTodosProdutosAtivos()
+        public async Task<List<ProdutoDTOResponse>?> ListarTodosProdutosAtivosAsync()
         {
-            var produtos = await _produtoRepositorio.ListarTodos();
+            var produtos = await _produtoRepositorio.ListarTodosAsync();
             var produtosAtivos = produtos?.Where(x => x.Ativo).ToList();
 
             return (produtosAtivos != null && produtosAtivos.Count != 0) ?
@@ -79,15 +79,15 @@ namespace InvestimentosCaixa.Api.Dominio.Servicos
                 null;
         }
 
-        public async Task<bool> RemoverProduto(int idAluno)
+        public async Task<bool> RemoverProdutoAsync(int idAluno)
         {
-            var produtoDb = await _produtoRepositorio.ListarPorId(idAluno);
+            var produtoDb = await _produtoRepositorio.ListarPorIdAsync(idAluno);
             if (produtoDb == null)
                 return false;
 
             produtoDb.Ativo = false;
 
-            _ = await _produtoRepositorio.Atualizar(produtoDb);
+            _ = await _produtoRepositorio.AtualizarAsync(produtoDb);
 
             return true;
         }

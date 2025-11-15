@@ -26,11 +26,11 @@ namespace InvestimentosCaixa.Api.Apresentacao.Controllers
         /// </summary>
         /// <returns>Lista de produtos</returns>
         [HttpGet]
-        public async Task<ActionResult> RetornarTodosProduto()
+        public async Task<ActionResult> ListarTodosProdutos()
         {
             try
             {
-                var listarProdutos = await _produtoServico.ListarTodosProdutosAtivos();
+                var listarProdutos = await _produtoServico.ListarTodosProdutosAtivosAsync();
 
                 return Ok(listarProdutos);
             }
@@ -46,11 +46,11 @@ namespace InvestimentosCaixa.Api.Apresentacao.Controllers
         /// <param name="id">Id do produto</param>
         /// <returns>Produto cadastrado</returns>
         [HttpGet("{id}")]
-        public async Task<ActionResult> RetornarProdutoPorId(int id)
+        public async Task<ActionResult> BuscarProdutoPorId(int id)
         {
             try
             {
-                var produto = await _produtoServico.DetalhesProduto(id);
+                var produto = await _produtoServico.DetalhesProdutoAsync(id);
 
                 if (produto == null)
                 {
@@ -74,7 +74,7 @@ namespace InvestimentosCaixa.Api.Apresentacao.Controllers
         {
             try
             {
-                await _produtoServico.AdicionarProduto(produtoDto);
+                await _produtoServico.AdicionarProdutoAsync(produtoDto);
                 return Ok("Produto cadastrado com sucesso!");
             }
             catch(ConvertEnumException e)
@@ -103,14 +103,14 @@ namespace InvestimentosCaixa.Api.Apresentacao.Controllers
                     return BadRequest("O ID do produto não corresponde ao ID informado na URL.");
                 }
 
-                var produtoDb = await _produtoServico.ListarProdutoAtivoPorNome(produto.Nome);
+                var produtoDb = await _produtoServico.ListarProdutoAtivoPorNomeAsync(produto.Nome);
 
                 if (produtoDb != null)
                 {
                     return BadRequest("Já existe um produto cadastrado com esse nome.");
                 }
 
-                var produtoAtualizado = await _produtoServico.AtualizarProduto(produto);
+                var produtoAtualizado = await _produtoServico.AtualizarProdutoAsync(produto);
 
                 if (produtoAtualizado == null)
                 {
@@ -137,7 +137,7 @@ namespace InvestimentosCaixa.Api.Apresentacao.Controllers
         {
             try
             {
-                var resultado = await _produtoServico.RemoverProduto(id);
+                var resultado = await _produtoServico.RemoverProdutoAsync(id);
                 if (!resultado)
                 {
                     return NotFound($"Produto com ID {id} não encontrado para deleção.");

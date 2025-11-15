@@ -19,8 +19,9 @@ namespace InvestimentosCaixa.Api.Infraestrutura.Repositorios
         public async Task<Produto?> ListarProdutoPorNome(string nomeProduto)
         {
             return await _context.Produtos
-                .FirstOrDefaultAsync(p => p.Nome.ToLower() == nomeProduto.ToLower());
-            
+                        .FirstOrDefaultAsync(p =>
+                            p.Nome.Equals(nomeProduto, StringComparison.OrdinalIgnoreCase));
+
         }
     }
 }

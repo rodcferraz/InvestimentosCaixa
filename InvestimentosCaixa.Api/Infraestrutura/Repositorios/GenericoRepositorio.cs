@@ -15,29 +15,29 @@ namespace InvestimentosCaixa.Api.Infraestrutura.Repossitorios
             _dbSet = _context.Set<T>();
 
         }
-        public async Task Adicionar(T entity)
+        public async Task AdicionarAsync(T entity)
         {
             await _dbSet.AddAsync(entity);
             await _context.SaveChangesAsync();
         }
 
-        public async Task Deletar(T entity)
+        public async Task DeletarAsync(T entity)
         {
             _dbSet.Remove(entity);
             await _context.SaveChangesAsync();
         }
 
-        public async Task<List<T>> ListarTodos()
+        public async Task<List<T>> ListarTodosAsync()
         {
             return await _dbSet.ToListAsync();
         }
 
-        public async Task<T?> ListarPorId(int id)
+        public async Task<T?> ListarPorIdAsync(int id)
         {
             return await _dbSet.FindAsync(id);
         }
 
-        public async Task<T> Atualizar(T aluno)
+        public async Task<T> AtualizarAsync(T aluno)
         {
             _dbSet.Update(aluno);
             await _context.SaveChangesAsync();

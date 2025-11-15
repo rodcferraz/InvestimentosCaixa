@@ -6,8 +6,12 @@ using InvestimentosCaixa.Api.Dominio.Servicos.Interfaces;
 using InvestimentosCaixa.Api.Infraestrutura.Data.Context;
 using InvestimentosCaixa.Api.Infraestrutura.Repositorios;
 using InvestimentosCaixa.Api.Infraestrutura.Repossitorios;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi;
+using System.Text;
 using System.Text.Json.Serialization;
 
 namespace InvestimentosCaixa.Api
@@ -37,15 +41,55 @@ namespace InvestimentosCaixa.Api
                 options
                     .UseSqlite("Data Source=InvestimentoCaixa.db"));
 
+            //Produtos
             builder.Services.AddScoped(typeof(IGenericoRepositorio<>), typeof(GenericoRepositorio<>));
             builder.Services.AddScoped<IProdutoRepositorio, ProdutoRepositorio>();
             builder.Services.AddScoped<IProdutoServico, ProdutoServico>();
             builder.Services.AddScoped<IProdutoMapper, ProdutoMapper>();
 
+            //JWT
+            builder.Services.AddSingleton<JwtServico>();
+
+            builder.Services.Configure<ApiBehaviorOptions>(options =>
+            {
+                options.InvalidModelStateResponseFactory = context =>
+                {
+                    var erros = context.ModelState
+                        .Where(x => x.Value.Errors.Any())
+                        .Select(x => new {
+                            Campo = x.Key,
+                            Mensagens = x.Value.Errors.Select(e => e.ErrorMessage).ToArray()
+                        });
+
+                    return new BadRequestObjectResult(erros);
+                };
+            });
+
+            builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
+            .AddJwtBearer(options =>
+            {
+                var settings = builder.Configuration.GetSection("Jwt");
+                options.TokenValidationParameters = new TokenValidationParameters
+                {
+                    ValidateIssuer = true,
+                    ValidateAudience = true,
+                    ValidateLifetime = true,
+                    ValidateIssuerSigningKey = true,
+                    ValidIssuer = settings["Issuer"],
+                    ValidAudience = settings["Audience"],
+                    IssuerSigningKey = new SymmetricSecurityKey(
+                        Encoding.UTF8.GetBytes(settings["Key"])
+                    )
+                };
+            });
+
+            builder.Services.AddAuthorization();
+
             var app = builder.Build();
 
             // Configure the HTTP request pipeline.
 
+            app.UseAuthentication();
             app.UseAuthorization();
 
             app.UseSwagger();
