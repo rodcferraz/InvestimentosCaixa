@@ -5,6 +5,8 @@ namespace InvestimentosCaixa.Api.Dominio.Entidades
     public class SimulacaoCliente
     {
         [Required]
+        public int SimulacaoId { get; set; }
+        [Required]
         public int ClienteId { get; set; }
         [Required]
         public int ProdutoId { get; set; }

@@ -2,7 +2,7 @@
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Filters;
 
-namespace InvestimentosCaixa.Api.Dominio.Filtros
+namespace InvestimentosCaixa.Api.Apresentacao.Filtros
 {
     public class ValidarSimulacaoFiltro : IAsyncActionFilter
     {

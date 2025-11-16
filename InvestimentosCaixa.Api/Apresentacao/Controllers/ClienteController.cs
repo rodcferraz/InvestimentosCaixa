@@ -1,4 +1,5 @@
 ﻿using InvestimentosCaixa.Api.Aplicacao.DTOs.Clientes;
+using InvestimentosCaixa.Api.Aplicacao.Servicos.Interfaces;
 using InvestimentosCaixa.Api.Dominio.Exceptions;
 using InvestimentosCaixa.Api.Dominio.Servicos.Interfaces;
 using Microsoft.AspNetCore.Mvc;
@@ -10,10 +11,14 @@ namespace InvestimentosCaixa.Api.Apresentacao.Controllers
     public class ClienteController : ControllerBase
     {
         private readonly IClienteServico _clienteServico;
+        private readonly IGerarPerfilClienteServico _gerarPerfilClienteServico;
 
-        public ClienteController(IClienteServico clienteService)
+        public ClienteController(
+            IClienteServico clienteService,
+            IGerarPerfilClienteServico gerarPerfilClienteServico)
         {
             _clienteServico = clienteService;
+            _gerarPerfilClienteServico = gerarPerfilClienteServico;
         }
 
         [HttpGet]
@@ -119,7 +124,7 @@ namespace InvestimentosCaixa.Api.Apresentacao.Controllers
             }
         }
 
-        [HttpPost]
+        [HttpPost("atualizar-senha")]
         public async Task<ActionResult> AtualizarSenhaCliente(AtualizarSenhaClienteDTORequest clienteSenhaDto)
         {
             try
@@ -146,5 +151,26 @@ namespace InvestimentosCaixa.Api.Apresentacao.Controllers
             }
             
         }
+
+        [HttpGet("perfil-risco/{clienteId}")]
+        //[HttpGet]
+        public async Task<ActionResult> ExibirPerfilRiscoCliente(int id)
+        {
+            try
+            {
+                var perfilRisco = await _gerarPerfilClienteServico.GerarPerfilCiente(id);
+
+                return Ok(perfilRisco);
+            }
+            catch(ConvertEnumException error)
+            {
+                return BadRequest(error.Message);
+            }
+            catch (Exception e)
+            {
+                return BadRequest(e.Message);
+            }
+            
+        } 
     }
 }

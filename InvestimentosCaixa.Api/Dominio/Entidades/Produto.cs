@@ -17,10 +17,12 @@ namespace InvestimentosCaixa.Api.Dominio.Entidades
         public int Risco { get; set; }
         public bool Ativo { get; set; } = true;
         public virtual ICollection<SimulacaoCliente> SimulacoesCliente { get; set; }
+        public virtual ICollection<InvestimentoCliente> InvestimentosCliente { get; set; }
 
         public Produto()
         {
             SimulacoesCliente = new HashSet<SimulacaoCliente>();
+            InvestimentosCliente = new HashSet<InvestimentoCliente>();
         }
     }
 }

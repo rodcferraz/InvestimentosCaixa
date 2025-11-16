@@ -38,9 +38,9 @@ namespace InvestimentosCaixa.Api.Dominio.Servicos
                 throw new ConvertEnumException(typeof(RiscoProduto), produtoDto.Risco);
             }
 
-            if (!Enum.TryParse(produtoDto.Tipo, out TipoProduto tipoProduto))
+            if (!Enum.TryParse(produtoDto.Tipo, out TipoProdutoEnum tipoProduto))
             {
-                throw new ConvertEnumException(typeof(TipoProduto), produtoDto.Tipo);
+                throw new ConvertEnumException(typeof(TipoProdutoEnum), produtoDto.Tipo);
             }
 
             produtoDb.Nome = produtoDto.Nome;
@@ -71,9 +71,9 @@ namespace InvestimentosCaixa.Api.Dominio.Servicos
 
         public async Task<ProdutoDTOResponse?> ListarProdutoAtivoPorTipoAsync(string tipoProduto)
         {
-            if (!Enum.TryParse(tipoProduto, out TipoProduto TipoProduto))
+            if (!Enum.TryParse(tipoProduto, out TipoProdutoEnum TipoProduto))
             {
-                throw new ConvertEnumException(typeof(TipoProduto), tipoProduto);
+                throw new ConvertEnumException(typeof(TipoProdutoEnum), tipoProduto);
             }
 
             var produtoDb = await _produtoRepositorio.ListarProdutoPorTipo((int)TipoProduto);
@@ -84,6 +84,24 @@ namespace InvestimentosCaixa.Api.Dominio.Servicos
             }
 
             return _produtoMapper.ToDtoResponse(produtoDb);
+        }
+
+        public async Task<List<ProdutoDTOResponse>> ListarProdutosAtivosPorPerfilAsync(int idPerfil)
+        {
+            var produtos = await this.ListarTodosProdutosAtivosAsync();
+
+            if (produtos == null || produtos.Count == 0)
+            {
+                return Enumerable.Empty<ProdutoDTOResponse>().ToList();
+            }
+
+            return (produtos == null || produtos.Count == 0) ? 
+                    Enumerable.Empty< ProdutoDTOResponse >().ToList() :
+                    produtos
+                       .Where(x => 
+                            x.Risco == ((RiscoProduto)idPerfil).ToString())
+                       .ToList();
+
         }
 
         public async Task<List<ProdutoDTOResponse>?> ListarTodosProdutosAtivosAsync()

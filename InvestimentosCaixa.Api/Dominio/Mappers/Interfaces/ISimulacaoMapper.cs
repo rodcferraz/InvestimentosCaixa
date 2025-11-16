@@ -1,5 +1,4 @@
-﻿using InvestimentosCaixa.Api.Aplicacao.DTOs.Clientes;
-using InvestimentosCaixa.Api.Aplicacao.DTOs.Simulacoes;
+﻿using InvestimentosCaixa.Api.Aplicacao.DTOs.Simulacoes;
 using InvestimentosCaixa.Api.Dominio.Entidades;
 
 namespace InvestimentosCaixa.Api.Dominio.Mappers.Interfaces

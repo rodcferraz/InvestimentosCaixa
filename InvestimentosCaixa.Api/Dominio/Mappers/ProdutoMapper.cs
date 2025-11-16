@@ -14,7 +14,7 @@ namespace InvestimentosCaixa.Api.Dominio.Mappers
             {
                 Id = produto.Id,
                 Nome = produto.Nome,
-                Tipo = ((TipoProduto)produto.Tipo).ToString(),
+                Tipo = ((TipoProdutoEnum)produto.Tipo).ToString(),
                 Rentabilidade = produto.Rentabilidade,
                 Risco = ((RiscoProduto)produto.Risco).ToString()
             };
@@ -29,9 +29,9 @@ namespace InvestimentosCaixa.Api.Dominio.Mappers
 
         public Produto ToBaseEntity(ProdutoDTOBaseRequest produtoDto)
         {
-            if (!Enum.TryParse(produtoDto.Tipo, out TipoProduto tipoProduto))
+            if (!Enum.TryParse(produtoDto.Tipo, out TipoProdutoEnum tipoProduto))
             {
-                throw new ConvertEnumException(typeof(TipoProduto), produtoDto.Tipo);
+                throw new ConvertEnumException(typeof(TipoProdutoEnum), produtoDto.Tipo);
             }
 
             if (!Enum.TryParse(produtoDto.Risco, out RiscoProduto riscoProduto))

@@ -12,9 +12,7 @@ namespace InvestimentosCaixa.Api.Dominio.Mappers
             {
                 Nome = clienteDto.Nome,
                 Email = clienteDto.Email,
-                RendaMensal = clienteDto.RendaMensal,
-                PercentualInvestimentoRenda = clienteDto.PercentualInvestimentoRenda,
-                PerfilDeclarado = clienteDto.PerfilDeclarado
+                Liquidez = clienteDto.Liquidez
             };
         }
 
@@ -25,9 +23,7 @@ namespace InvestimentosCaixa.Api.Dominio.Mappers
                 Id = cliente.Id,
                 Nome = cliente.Nome,
                 Email = cliente.Email,
-                RendaMensal = cliente.RendaMensal,
-                PercentualInvestimentoRenda = cliente.PercentualInvestimentoRenda,
-                PerfilDeclarado = cliente.PerfilDeclarado
+                Liquidez = cliente.Liquidez
             };
         }
 

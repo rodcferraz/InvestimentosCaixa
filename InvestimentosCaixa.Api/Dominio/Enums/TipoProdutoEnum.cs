@@ -1,6 +1,6 @@
 ﻿namespace InvestimentosCaixa.Api.Dominio.Enums
 {
-    public enum TipoProduto
+    public enum TipoProdutoEnum
     {
         TesouroSelic = 1,
         CDB = 2,

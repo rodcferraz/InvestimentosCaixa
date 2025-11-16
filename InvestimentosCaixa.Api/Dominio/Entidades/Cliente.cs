@@ -16,18 +16,15 @@ namespace InvestimentosCaixa.Api.Dominio.Entidades
         [StringLength(50)]
         public string SenhaHash { get; set; }
         [Required]
-        public decimal RendaMensal { get; set; }
-        [Required]
-        public decimal PercentualInvestimentoRenda { get; set; }
-        [Required]
-        public int PerfilDeclarado { get; set; }
+        public int Liquidez { get; set; }
         public bool Ativo { get; set; } = true;
-
         public virtual ICollection<SimulacaoCliente> SimulacoesCliente { get; set; }
+        public virtual ICollection<InvestimentoCliente> InvestimentosCliente { get; set; }
 
         public Cliente()
         {
             SimulacoesCliente = new HashSet<SimulacaoCliente>();
+            InvestimentosCliente = new HashSet<InvestimentoCliente>();
         }
     }
 }

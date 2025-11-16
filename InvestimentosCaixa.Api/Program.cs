@@ -1,4 +1,7 @@
-using InvestimentosCaixa.Api.Dominio.Filtros;
+using InvestimentosCaixa.Api.Aplicacao.Servicos;
+using InvestimentosCaixa.Api.Aplicacao.Servicos.Interfaces;
+using InvestimentosCaixa.Api.Apresentacao.Filtros;
+using InvestimentosCaixa.Api.Configuracoes;
 using InvestimentosCaixa.Api.Dominio.Mappers;
 using InvestimentosCaixa.Api.Dominio.Mappers.Interfaces;
 using InvestimentosCaixa.Api.Dominio.Repositorios.Interfaces;
@@ -41,11 +44,41 @@ namespace InvestimentosCaixa.Api
                 options
                     .UseSqlite("Data Source=InvestimentoCaixa.db"));
 
-            //Produtos
+            var appSettings = new AppSettings(builder.Configuration);
+            builder.Services.AddSingleton(appSettings);
+
             builder.Services.AddScoped(typeof(IGenericoRepositorio<>), typeof(GenericoRepositorio<>));
+
+            //Produtos
             builder.Services.AddScoped<IProdutoRepositorio, ProdutoRepositorio>();
             builder.Services.AddScoped<IProdutoServico, ProdutoServico>();
             builder.Services.AddScoped<IProdutoMapper, ProdutoMapper>();
+
+            //Clientes
+            builder.Services.AddScoped<IClienteRepositorio, ClienteRepositorio>();
+            builder.Services.AddScoped<IClienteServico, ClienteServico>();
+            builder.Services.AddScoped<IClienteMapper, ClienteMapper>();
+
+            //Simulacoes
+            builder.Services.AddScoped<ISimulacaoRepositorio, SimulacaoRepositorio>();
+            builder.Services.AddScoped<ISimulacaoServico, SimulacaoServico>();
+            builder.Services.AddScoped<ISimulacaoMapper, SimulacaoMapper>();
+
+            //Investimentos
+            builder.Services.AddScoped<IInvestimentoRepositorio, InvestimentoRepositorio>();
+            builder.Services.AddScoped<IInvestimentoServico, InvestimentoServico>();
+            builder.Services.AddScoped<IInvestimentoMapper, InvestimentoMapper>();
+
+            //Telemetrias
+            builder.Services.AddScoped<ITelemetriaRepositorio, TelemetriaRepositorio>();
+            builder.Services.AddScoped<ITelemetriaServico, TelemetriaServico>();
+            builder.Services.AddScoped<ITelemetriaMapper, TelemetriaMapper>();
+
+            //Perfis
+            builder.Services.AddScoped<IGerarPerfilClienteServico, GerarPerfilClienteServico>();
+            builder.Services.AddScoped<IPerfilPontuacaoClienteServico, PerfilPontuacaoClientePersonalizadoServico>();
+            builder.Services.AddScoped<IPerfilRiscoClienteServico, PerfilRiscoClientePersonalizado>(); 
+            builder.Services.AddScoped<ICalculoPerfilRiscoMapper, CalculoPerfilRiscoMapper>();
 
             //JWT
             builder.Services.AddSingleton<JwtServico>();
@@ -77,10 +110,10 @@ namespace InvestimentosCaixa.Api
                     ValidateAudience = true,
                     ValidateLifetime = true,
                     ValidateIssuerSigningKey = true,
-                    ValidIssuer = settings["Issuer"],
-                    ValidAudience = settings["Audience"],
+                    ValidIssuer = appSettings.Issuer,
+                    ValidAudience = appSettings.Audience,
                     IssuerSigningKey = new SymmetricSecurityKey(
-                        Encoding.UTF8.GetBytes(settings["Key"])
+                        Encoding.UTF8.GetBytes(appSettings.Key)
                     )
                 };
             });

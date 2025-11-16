@@ -100,14 +100,14 @@ namespace InvestimentosCaixa.Testes.Apresentacao.Controllers.ProdutoControllerTe
 
             _fixture.ProdutoServicoMock
                 .Setup(s => s.ListarProdutoAtivoPorNomeAsync("Caixa CDB"))
-                .ThrowsAsync(new ConvertEnumException(typeof(TipoProduto), "CDB2"));
+                .ThrowsAsync(new ConvertEnumException(typeof(TipoProdutoEnum), "CDB2"));
 
             // Act
             var result = await _fixture.Controller.AtualizarProduto(1, dto);
 
             // Assert
             var badRequest = Assert.IsType<BadRequestObjectResult>(result);
-            Assert.Equal(ConvertEnumException.MensagemErroConverEnum(typeof(TipoProduto), "CDB2"),
+            Assert.Equal(ConvertEnumException.MensagemErroConverEnum(typeof(TipoProdutoEnum), "CDB2"),
                         badRequest.Value);
         }
 

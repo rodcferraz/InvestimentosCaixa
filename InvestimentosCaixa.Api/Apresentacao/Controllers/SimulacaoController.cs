@@ -1,5 +1,5 @@
 ﻿using InvestimentosCaixa.Api.Aplicacao.DTOs.Simulacoes;
-using InvestimentosCaixa.Api.Dominio.Atributos;
+using InvestimentosCaixa.Api.Apresentacao.Atributos;
 using InvestimentosCaixa.Api.Dominio.Entidades;
 using InvestimentosCaixa.Api.Dominio.Servicos.Interfaces;
 using Microsoft.AspNetCore.Mvc;
@@ -17,6 +17,7 @@ namespace InvestimentosCaixa.Api.Apresentacao.Controllers
             _simulacaoServico = simulacaoServico;
         }
 
+        [Telemetria]
         [ValidarSimulacao]
         [HttpPost("simular-investimento")]
         public async Task<ActionResult> SimularInvestimento(SimulacaoInvestimentoDTORequest simulacaoRequest)
@@ -58,7 +59,8 @@ namespace InvestimentosCaixa.Api.Apresentacao.Controllers
             }
         }
 
-        public async Task<ActionResult> ListSimulacoesPorDia()
+        [HttpGet("por-produto-dia")]
+        public async Task<ActionResult> ListarSimulacoesPorDia()
         {
             try
             {

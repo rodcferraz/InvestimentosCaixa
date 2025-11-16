@@ -1,7 +1,7 @@
-﻿using InvestimentosCaixa.Api.Dominio.Filtros;
+﻿using InvestimentosCaixa.Api.Apresentacao.Filtros;
 using Microsoft.AspNetCore.Mvc;
 
-namespace InvestimentosCaixa.Api.Dominio.Atributos
+namespace InvestimentosCaixa.Api.Apresentacao.Atributos
 {
     public class ValidarSimulacaoAttribute : TypeFilterAttribute
     {

@@ -24,9 +24,7 @@ namespace InvestimentosCaixa.Api.Dominio.Servicos
                 return null;
 
             clienteDb.Nome = clienteDto.Nome;
-            clienteDb.PerfilDeclarado = clienteDto.PerfilDeclarado;
-            clienteDb.RendaMensal = clienteDto.RendaMensal;
-            clienteDb.PercentualInvestimentoRenda = clienteDto.PercentualInvestimentoRenda;
+            clienteDb.Liquidez = clienteDto.Liquidez;
 
             var clienteAtualizado = await _clienteRepositorio.AtualizarAsync(clienteDb);
 
@@ -48,11 +46,9 @@ namespace InvestimentosCaixa.Api.Dominio.Servicos
             return true;
 
         }
-
         public async Task CadastrarClienteAsync(ClienteDTOBaseRequest dto)
         {
             var clienteDb = _clienteMapper.ToBaseEntity(dto);
-
             await _clienteRepositorio.AdicionarAsync(clienteDb);
         }
 

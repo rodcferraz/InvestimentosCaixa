@@ -149,5 +149,23 @@ namespace InvestimentosCaixa.Api.Apresentacao.Controllers
                 return BadRequest($"Não foi possível deletar o produto: {e.Message}");
             }
         }
+
+        [HttpGet("produtos-recomendados/{perfil}")]
+        public async Task<ActionResult> ListarProdutosRecomendadosPorPerfil(int perfil)
+        {
+            try{
+                var produtosRecomendados = await _produtoServico.ListarProdutosAtivosPorPerfilAsync(perfil);
+
+                if (!produtosRecomendados.Any())
+                    return NoContent();
+
+                return Ok(produtosRecomendados);
+
+            }
+            catch(Exception erro)
+            {
+                return BadRequest(erro.Message);
+            }
+        }
     }
 }
