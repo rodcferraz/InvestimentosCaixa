@@ -24,16 +24,22 @@ namespace InvestimentosCaixa.Api.Dominio.Servicos
         {
             await _telemetriaRepositorio.AdicionarAsync(telemetria);
 
-            _logger.LogInformation($"Telemetria de método {telemetria.NomeRota} cadastrada.");
+            _logger.LogInformation($"Telemetria com id {telemetria.Id} para o  método {telemetria.NomeRota} foi cadastrado.");
         }
 
-        public async Task<TelemetriaDTOResponse> ListarRelatorioTelemetria()
+        public async Task<TelemetriaDTOResponse?> ListarRelatorioTelemetria()
         {
             var telemetrias = await _telemetriaRepositorio.ListarTodosAsync();
 
-            return (telemetrias == null || telemetrias.Any()) ?
-                        new TelemetriaDTOResponse() :
-                        _telemetriaMapper.ToDtoResponse(telemetrias);
+            if (telemetrias == null || telemetrias.Count == 0)
+            {
+                _logger.LogInformation("Nenhum dado de telemetria encontrado.");
+                return null;
+            }
+
+            _logger.LogInformation("Relatório de telemetria gerado com sucesso.");
+
+            return _telemetriaMapper.ToDtoResponse(telemetrias);
         }
     }
 }

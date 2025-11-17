@@ -1,7 +1,9 @@
 ﻿using InvestimentosCaixa.Api.Aplicacao.DTOs.Clientes;
 using InvestimentosCaixa.Api.Aplicacao.Servicos.Interfaces;
+using InvestimentosCaixa.Api.Apresentacao.Atributos;
 using InvestimentosCaixa.Api.Dominio.Exceptions;
 using InvestimentosCaixa.Api.Dominio.Servicos.Interfaces;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace InvestimentosCaixa.Api.Apresentacao.Controllers
@@ -12,13 +14,16 @@ namespace InvestimentosCaixa.Api.Apresentacao.Controllers
     {
         private readonly IClienteServico _clienteServico;
         private readonly IGerarPerfilClienteServico _gerarPerfilClienteServico;
+        private readonly ILogger<ClienteController> _logger;
 
         public ClienteController(
             IClienteServico clienteService,
-            IGerarPerfilClienteServico gerarPerfilClienteServico)
+            IGerarPerfilClienteServico gerarPerfilClienteServico,
+            ILogger<ClienteController> logger)
         {
             _clienteServico = clienteService;
             _gerarPerfilClienteServico = gerarPerfilClienteServico;
+            _logger = logger;
         }
 
         [HttpGet]
@@ -27,12 +32,13 @@ namespace InvestimentosCaixa.Api.Apresentacao.Controllers
             try
             {
                 var listarProdutos = await _clienteServico.ListarTodosClientesAtivosAsync();
-
+                _logger.LogInformation("Listagem de clientes realizada com sucesso.");
                 return Ok(listarProdutos);
             }
             catch (Exception e)
             {
-                return BadRequest($"Não foi possível listar os clientes: {e.Message}");
+                _logger.LogError($"Erro ao listar clientes: {e.Message}");
+                return StatusCode(500, "Ocorreu um erro interno no servidor.");
             }
 
         }
@@ -46,28 +52,32 @@ namespace InvestimentosCaixa.Api.Apresentacao.Controllers
 
                 if (cliente == null)
                 {
+                    _logger.LogWarning($"Cliente com {id} não encontrado.");
                     return NotFound($"Cliente com {id} não encontrado");
                 }
-
+                _logger.LogInformation($"Cliente com {id} encontrado.");
                 return Ok(cliente);
             }
             catch (Exception e)
             {
-                return BadRequest($"Não foi possível buscar cliente: {e.Message}");
+                _logger.LogError($"Erro ao buscar cliente com Id {id}: {e.Message}");
+                return StatusCode(500, "Ocorreu um erro interno no servidor.");
             }
         }
 
         [HttpPost]
-        public async Task<ActionResult> CadastrarCliente(ClienteDTOBaseRequest dto)
+        public async Task<ActionResult> CadastrarCliente(ClienteDTOCadastroRequest dto)
         {
             try
             {
-                await _clienteServico.CadastrarClienteAsync(dto);
-                return Ok($"Cliente {dto.Nome} cadastrado com sucesso!");
+                var clienteId = await _clienteServico.CadastrarClienteAsync(dto);
+                _logger.LogInformation($"ClienteId {clienteId} cadastrado com sucesso.");
+                return Ok($"ClienteId {clienteId} cadastrado.");
             }
             catch (Exception e)
             {
-                return BadRequest(e.Message);
+                _logger.LogError($"Erro ao cadastrar cliente: {e.Message}");
+                return StatusCode(500, "Ocorreu um erro interno no servidor.");
             }
         }
 
@@ -78,6 +88,7 @@ namespace InvestimentosCaixa.Api.Apresentacao.Controllers
             {
                 if (id != cliente.Id)
                 {
+                    _logger.LogWarning($"ID do cliente na URL ({id}) não corresponde ao ID no corpo da requisição ({cliente.Id}).");
                     return BadRequest("O ID do cliente não corresponde ao ID informado na URL.");
                 }
 
@@ -85,6 +96,7 @@ namespace InvestimentosCaixa.Api.Apresentacao.Controllers
 
                 if (clienteDb != null)
                 {
+                    _logger.LogWarning($"Já existe um cliente cadastrado com o nome {cliente.Nome}.");
                     return BadRequest("Já existe um cliente cadastrado com esse nome.");
                 }
 
@@ -92,17 +104,22 @@ namespace InvestimentosCaixa.Api.Apresentacao.Controllers
 
                 if (clienteAtualizado == null)
                 {
+                    _logger.LogWarning($"Cliente com ID {id} não encontrado para atualização.");
                     return NotFound($"Cliente com ID {id} não encontrado.");
                 }
+
+                _logger.LogInformation($"Cliente com ID {id} atualizado com sucesso.");
                 return Ok(clienteAtualizado);
             }
             catch (ConvertEnumException e)
             {
+                _logger.LogError($"Erro ao converter enum durante a atualização do cliente: {e.Message}");
                 return BadRequest(e.Message);
             }
             catch (Exception e)
             {
-                return BadRequest($"Não foi possível atualizar o cliente: {e.Message}");
+                _logger.LogError($"Erro ao atualizar cliente com Id {cliente.Id}: {e.Message}");
+                return StatusCode(500, "Ocorreu um erro interno no servidor.");
             }
         }
 
@@ -114,13 +131,16 @@ namespace InvestimentosCaixa.Api.Apresentacao.Controllers
                 var resultado = await _clienteServico.RemoverClienteAsync(id);
                 if (!resultado)
                 {
+                    _logger.LogWarning($"Cliente com ID {id} não encontrado para deleção.");
                     return NotFound($"Cliente com ID {id} não encontrado para deleção.");
                 }
-                return Ok("Cliente deletado com sucesso!");
+                _logger.LogInformation($"Cliente com ID {id} deletado.");
+                return Ok("Cliente deletado.");
             }
             catch (Exception e)
             {
-                return BadRequest($"Não foi possível deletar o cliente: {e.Message}");
+                _logger.LogError($"Erro ao deletar cliente com Id {id}: {e.Message}");
+                return StatusCode(500, "Ocorreu um erro interno no servidor.");
             }
         }
 
@@ -131,6 +151,7 @@ namespace InvestimentosCaixa.Api.Apresentacao.Controllers
             {
                 if (!clienteSenhaDto.NovaSenha.Equals(clienteSenhaDto.ConfirmarNovaSenha))
                 {
+                    _logger.LogWarning("Campos de nova senha não são idênticos.");
                     return BadRequest("Campos de nova senha não são idênticos");
                 }
 
@@ -139,38 +160,44 @@ namespace InvestimentosCaixa.Api.Apresentacao.Controllers
                     clienteSenhaDto.SenhaAtual, 
                     clienteSenhaDto.NovaSenha);
 
+                _logger.LogInformation($"Senha do cliente com ID {clienteSenhaDto.Id} atualizada com sucesso.");
                 return Ok("Senha atuualizada com sucesso");
             }
             catch (SenhaIncorretaException erro)
             {
-                return BadRequest(erro.Message);
+                _logger.LogWarning($"Senha incorreta para o cliente com ID {clienteSenhaDto.Id}: {erro.Message}");
+                return BadRequest("Senha incorreta");
             }
             catch(Exception erro)
             {
-                return BadRequest(erro.Message);
+                _logger.LogError($"Erro ao atualizar a senha do cliente com ID {clienteSenhaDto.Id}: {erro.Message}");
+                return StatusCode(500, "Ocorreu um erro interno no servidor.");
             }
             
         }
 
+        [Telemetria]
         [HttpGet("perfil-risco/{clienteId}")]
-        //[HttpGet]
-        public async Task<ActionResult> ExibirPerfilRiscoCliente(int id)
+        public async Task<ActionResult> ExibirPerfilRiscoCliente(int clienteId)
         {
             try
             {
-                var perfilRisco = await _gerarPerfilClienteServico.GerarPerfilCiente(id);
+                var perfilRisco = await _gerarPerfilClienteServico.GerarPerfilCiente(clienteId);
+
+                _logger.LogInformation($"Perfil de risco {perfilRisco.Perfil} atribuído para o cliente com ID {clienteId}.");
 
                 return Ok(perfilRisco);
             }
             catch(ConvertEnumException error)
             {
+                _logger.LogError($"Erro ao converter enum ao gerar perfil de risco para o cliente com ID {clienteId}: {error.Message}");
                 return BadRequest(error.Message);
             }
             catch (Exception e)
             {
-                return BadRequest(e.Message);
+                _logger.LogError($"Erro ao gerar perfil de risco para o cliente com ID {clienteId}: {e.Message}");
+                return StatusCode(500, "Ocorreu um erro interno no servidor.");
             }
-            
         } 
     }
 }

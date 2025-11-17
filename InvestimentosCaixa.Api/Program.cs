@@ -83,6 +83,7 @@ namespace InvestimentosCaixa.Api
             //JWT
             builder.Services.AddSingleton<JwtServico>();
 
+            //Customização de mensagem de erro de Model
             builder.Services.Configure<ApiBehaviorOptions>(options =>
             {
                 options.InvalidModelStateResponseFactory = context =>

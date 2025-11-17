@@ -19,7 +19,7 @@ namespace InvestimentosCaixa.Api.Infraestrutura.Repositorios
         {
             return await _context.Produtos
                         .FirstOrDefaultAsync(p =>
-                            p.Nome.Equals(nomeProduto, StringComparison.OrdinalIgnoreCase));
+                            p.Nome == nomeProduto);
 
         }
 

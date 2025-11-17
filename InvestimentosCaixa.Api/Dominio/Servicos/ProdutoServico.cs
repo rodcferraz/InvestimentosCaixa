@@ -11,19 +11,26 @@ namespace InvestimentosCaixa.Api.Dominio.Servicos
     {
         private readonly IProdutoMapper _produtoMapper;
         private readonly IProdutoRepositorio _produtoRepositorio;
+        private readonly ILogger<ProdutoServico> _logger;
 
         public ProdutoServico(IProdutoMapper produtoMapper,
-                              IProdutoRepositorio produtoRepositorio)
+                              IProdutoRepositorio produtoRepositorio,
+                              ILogger<ProdutoServico> logger)
         {
             _produtoMapper = produtoMapper;
             _produtoRepositorio = produtoRepositorio;
+            _logger = logger;
         }
 
-        public async Task AdicionarProdutoAsync(ProdutoDTOBaseRequest produtoDto)
+        public async Task<int> AdicionarProdutoAsync(ProdutoDTOBaseRequest produtoDto)
         {
             var produtoDb = _produtoMapper.ToBaseEntity(produtoDto);
 
-            await _produtoRepositorio.AdicionarAsync(produtoDb);
+            _ = await _produtoRepositorio.AdicionarAsync(produtoDb);
+
+            _logger.LogInformation($"Produto {produtoDb.Nome} com Id {produtoDb.Id} cadastrado");
+
+            return produtoDb.Id;
         }
 
         public async Task<ProdutoDTOResponse?> AtualizarProdutoAsync(ProdutoDTORequest produtoDto)
@@ -31,15 +38,20 @@ namespace InvestimentosCaixa.Api.Dominio.Servicos
             var produtoDb = await _produtoRepositorio.ListarPorIdAsync(produtoDto.Id);
 
             if (produtoDb == null)
+            {
+                _logger.LogWarning($"Produto com Id {produtoDto.Id} não encontrado para atualização.");
                 return null;
+            }
 
             if (!Enum.TryParse(produtoDto.Risco, out RiscoProduto riscoProduto))
             {
+                _logger.LogError($"Erro ao converter enum {nameof(RiscoProduto)} durante a atualização do produto {produtoDto.Nome}.");
                 throw new ConvertEnumException(typeof(RiscoProduto), produtoDto.Risco);
             }
 
             if (!Enum.TryParse(produtoDto.Tipo, out TipoProdutoEnum tipoProduto))
             {
+                _logger.LogError($"Erro ao converter enum {nameof(TipoProdutoEnum)} durante a atualização do produto {produtoDto.Nome}.");
                 throw new ConvertEnumException(typeof(TipoProdutoEnum), produtoDto.Tipo);
             }
 
@@ -50,14 +62,20 @@ namespace InvestimentosCaixa.Api.Dominio.Servicos
 
             var produtoAtualizado = await _produtoRepositorio.AtualizarAsync(produtoDb);
 
+            _logger.LogInformation($"Produto com Id {produtoDto.Id} atualizado com sucesso.");
+
             return _produtoMapper.ToDtoResponse(produtoAtualizado);
         }
 
         public async Task<ProdutoDTOResponse?> DetalhesProdutoAsync(int id)
         {
             var produto = await _produtoRepositorio.ListarPorIdAsync(id);
-            if (produto == null)
+            if (produto == null) 
+            { 
+                _logger.LogWarning($"Produto com Id {id} não encontrado.");
                 return null;
+            }
+                
             return _produtoMapper.ToDtoResponse(produto);
         }
 
@@ -65,7 +83,13 @@ namespace InvestimentosCaixa.Api.Dominio.Servicos
         {
             var produtoDb = await _produtoRepositorio.ListarProdutoPorNome(nomeProduto);
             if (produtoDb == null || produtoDb.Ativo == false)
+            {
+                _logger.LogWarning($"Produto com nome {nomeProduto} não encontrado ou inativo.");
                 return null;
+            }
+            
+            _logger.LogInformation($"Produto com nome {nomeProduto} encontrado.");
+
             return _produtoMapper.ToDtoResponse(produtoDb);
         }
 
@@ -73,6 +97,7 @@ namespace InvestimentosCaixa.Api.Dominio.Servicos
         {
             if (!Enum.TryParse(tipoProduto, out TipoProdutoEnum TipoProduto))
             {
+                _logger.LogError($"Erro ao converter enum {nameof(TipoProdutoEnum)} durante a busca do produto por tipo {tipoProduto}.");
                 throw new ConvertEnumException(typeof(TipoProdutoEnum), tipoProduto);
             }
 
@@ -80,8 +105,11 @@ namespace InvestimentosCaixa.Api.Dominio.Servicos
 
             if (produtoDb == null)
             {
+                _logger.LogWarning($"Produto com tipo {tipoProduto} não encontrado.");
                 return null;
             }
+
+            _logger.LogInformation($"Produto com tipo {tipoProduto} encontrado.");
 
             return _produtoMapper.ToDtoResponse(produtoDb);
         }
@@ -92,6 +120,7 @@ namespace InvestimentosCaixa.Api.Dominio.Servicos
 
             if (produtos == null || produtos.Count == 0)
             {
+                _logger.LogWarning($"Nenhum produto ativo encontrado para o perfil {idPerfil}.");
                 return Enumerable.Empty<ProdutoDTOResponse>().ToList();
             }
 
@@ -101,7 +130,6 @@ namespace InvestimentosCaixa.Api.Dominio.Servicos
                        .Where(x => 
                             x.Risco == ((RiscoProduto)idPerfil).ToString())
                        .ToList();
-
         }
 
         public async Task<List<ProdutoDTOResponse>?> ListarTodosProdutosAtivosAsync()
@@ -109,20 +137,27 @@ namespace InvestimentosCaixa.Api.Dominio.Servicos
             var produtos = await _produtoRepositorio.ListarTodosAsync();
             var produtosAtivos = produtos?.Where(x => x.Ativo).ToList();
 
-            return (produtosAtivos != null && produtosAtivos.Count != 0) ?
+            _logger.LogInformation($"Listagem de produtos ativos realizada com sucesso.");
+
+            return (produtosAtivos != null || produtosAtivos.Count != 0) ?
                 _produtoMapper.ToDtoResponseList(produtosAtivos) :
-                null;
+                Enumerable.Empty<ProdutoDTOResponse>().ToList();
         }
 
         public async Task<bool> RemoverProdutoAsync(int idAluno)
         {
             var produtoDb = await _produtoRepositorio.ListarPorIdAsync(idAluno);
             if (produtoDb == null)
+            {
+                _logger.LogWarning($"Produto com Id {idAluno} não encontrado para remoção.");
                 return false;
+            }
 
             produtoDb.Ativo = false;
 
             _ = await _produtoRepositorio.AtualizarAsync(produtoDb);
+
+            _logger.LogInformation($"Produto {produtoDb} invativado com sucesso.");
 
             return true;
         }

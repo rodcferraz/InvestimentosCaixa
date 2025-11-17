@@ -12,9 +12,11 @@ namespace InvestimentosCaixa.Api.Apresentacao.Controllers
     public class SimulacaoController : Controller
     {
         private readonly ISimulacaoServico _simulacaoServico;
-        public SimulacaoController(ISimulacaoServico simulacaoServico)
+        private readonly ILogger<SimulacaoController> _logger;
+        public SimulacaoController(ISimulacaoServico simulacaoServico, ILogger<SimulacaoController> logger)
         {
             _simulacaoServico = simulacaoServico;
+            _logger = logger;
         }
 
         [Telemetria]
@@ -31,11 +33,18 @@ namespace InvestimentosCaixa.Api.Apresentacao.Controllers
                         produto,
                         simulacaoRequest);
 
+                if (simulacaoFinalizada == null)
+                {
+                    _logger.LogError("Erro ao processar a simulação de investimento.");
+                    return BadRequest("Erro ao processar a simulação de investimento.");
+                }
+
                 return Ok(simulacaoFinalizada);
             }
             catch(Exception erro)
             {
-                return BadRequest(erro.Message);
+                _logger.LogError($"Erro ao simular investimento: {erro.Message}");
+                return StatusCode(500, "Erro interno no servidor.");
             }
         }
 
@@ -48,6 +57,7 @@ namespace InvestimentosCaixa.Api.Apresentacao.Controllers
 
                 if (simulacoes.IsNullOrEmpty())
                 {
+                    _logger.LogInformation("Nenhuma simulação de investimento encontrada.");
                     return NoContent();
                 }
 
@@ -55,27 +65,32 @@ namespace InvestimentosCaixa.Api.Apresentacao.Controllers
             }
             catch(Exception erro)
             {
-                return BadRequest(erro.Message);
+                _logger.LogError($"Erro ao listar simulações de investimento: {erro.Message}");
+                return StatusCode(500, "Erro interno no servidor.");
             }
         }
 
+        [Telemetria]
         [HttpGet("por-produto-dia")]
         public async Task<ActionResult> ListarSimulacoesPorDia()
         {
             try
             {
-                var simulacoes = await _simulacaoServico.ListarSimulacoesInvestimentos();
+                var simulacoes = await _simulacaoServico.ListarSimulacoesDeProdutosPorDia();
 
                 if (simulacoes.IsNullOrEmpty())
                 {
+                    _logger.LogInformation("Nenhuma simulação de investimento encontrada no dia.");
                     return NoContent();
                 }
 
+                _logger.LogInformation("Listagem de simulações de investimento no dia realizada com sucesso.");
                 return Ok(simulacoes);
             }
             catch (Exception erro)
             {
-                return BadRequest(erro.Message);
+                _logger.LogError($"Erro ao listar simulações de investimento por dia: {erro.Message}");
+                return StatusCode(500, "Erro interno no servidor.");
             }
         }
     }

@@ -8,7 +8,7 @@ namespace InvestimentosCaixa.Api.Dominio.Servicos.Interfaces
         Task<List<SimulacaoDTOResponse>?> ListarSimulacoesInvestimentos();
 
         Task<List<SimulacaoProdutoDiaDTOResponse>?> ListarSimulacoesDeProdutosPorDia();
-        Task<SimulacaoInvestimentoDTOResponse> SimularInvestimento(
+        Task<SimulacaoInvestimentoDTOResponse?> SimularInvestimento(
             Produto produto, 
             SimulacaoInvestimentoDTORequest simulacaoInvestimento);
     }

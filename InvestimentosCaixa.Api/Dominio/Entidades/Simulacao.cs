@@ -13,15 +13,9 @@ namespace InvestimentosCaixa.Api.Dominio.Entidades
         [Required]
         public decimal ValorInvestido { get; set; }
         [Required]
-        public decimal ValorFinal { get; set; }
-        [Required]
         public int PrazoMeses { get; set; }
         public DateTime DataSimulacao { get; set; }
-        public virtual ICollection<SimulacaoCliente> SimulacoesCliente { get; set; }
-
-        public Simulacao()
-        {
-            SimulacoesCliente = new HashSet<SimulacaoCliente>();
-        }
+        public virtual Cliente Cliente { get; set; }
+        public virtual Produto Produto { get; set; }
     }
 }

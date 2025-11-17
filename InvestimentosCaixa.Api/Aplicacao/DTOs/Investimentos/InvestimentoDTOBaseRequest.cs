@@ -5,11 +5,11 @@ namespace InvestimentosCaixa.Api.Aplicacao.DTOs.Investimentos
     public class InvestimentoDTOBaseRequest
     {
         [Required]
-        public string Tipo { get; set; }
+        public int IdCliente { get; set; }
+        [Required]
+        public int IdProduto { get; set; }
         [Required]
         public decimal Valor { get; set; }
-        [Required]
-        public decimal Rentabilidade { get; set; }
     }
 }
 

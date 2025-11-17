@@ -14,7 +14,7 @@ namespace InvestimentosCaixa.Api.Apresentacao.Controllers
         }
 
         [HttpPost("login")]
-        public IActionResult Login([FromBody] LoginRequest request)
+        public IActionResult Login(LoginRequest request)
         {
             // Simulação: valide usuário no banco aqui
             if (request.Email == "teste@teste.com")

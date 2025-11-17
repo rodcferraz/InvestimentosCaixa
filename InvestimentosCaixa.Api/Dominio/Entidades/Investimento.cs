@@ -7,18 +7,14 @@ namespace InvestimentosCaixa.Api.Dominio.Entidades
         [Key]
         public int Id { get; set; }
         [Required]
-        public int Tipo { get; set; }
+        public int IdCliente { get; set; }
+        [Required]
+        public int IdProduto { get; set; }
         [Required]
         public decimal Valor { get; set; }
         [Required]
-        public decimal Rentabilidade { get; set; }
-        [Required]
         public DateTime Data { get; set; }
-        public virtual ICollection<InvestimentoCliente> InvestimentosCliente { get; set; }
-
-        public Investimento()
-        {
-            InvestimentosCliente = new HashSet<InvestimentoCliente>();
-        }
+        public virtual Cliente Cliente { get; set; }
+        public virtual Produto Produto { get; set; }
     }
 }

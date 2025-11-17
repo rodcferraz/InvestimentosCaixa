@@ -4,7 +4,6 @@ using Microsoft.AspNetCore.Mvc;
 namespace InvestimentosCaixa.Api.Apresentacao.Controllers
 {
     [ApiController]
-    [Route("v1/[controller]")]
     public class TelemetriaController : Controller
     {
         private readonly ITelemetriaServico _telemetriaServico;

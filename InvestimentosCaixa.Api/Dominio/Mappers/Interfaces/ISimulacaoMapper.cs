@@ -6,8 +6,7 @@ namespace InvestimentosCaixa.Api.Dominio.Mappers.Interfaces
     public interface ISimulacaoMapper
     {
         SimulacaoDTOResponse ToDtoResponse(Simulacao simulacao);
-        //Simulacao ToBaseEntity(SimulacaoDTOBaseRequest simulacaoDto);
-        //Simulacao ToEntity(SimualacaoDTORequest clienteDto);
+        List<SimulacaoProdutoDiaDTOResponse> ToDtoProdutoDiaList(List<Simulacao> simulacoes);
         List<SimulacaoDTOResponse> ToDtoResponseList(IEnumerable<Simulacao> clientes);
     }
 }

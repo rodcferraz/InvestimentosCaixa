@@ -48,7 +48,10 @@ namespace InvestimentosCaixa.Api.Aplicacao.Servicos
 
             IPerfilRiscoClienteServico perfilRiscoCliente = metodoCalculoPerfilRisco switch
             {
-                CalculoPerfilRiscoEnum.Personalizado => new PerfilRiscoClientePersonalizado(perfilPontuacao, _investimentoServico, _clienteServico),
+                CalculoPerfilRiscoEnum.Personalizado => new PerfilRiscoClientePersonalizado(
+                                                                perfilPontuacao, 
+                                                                _investimentoServico, 
+                                                                _clienteServico),
                 CalculoPerfilRiscoEnum.Anbima => throw new NotImplementedException("Calculo de perfil de risco ANBIMA não implementado."),
                 _ => throw new NotImplementedException("Calculo de perfil de risco não implementado.")
             };
@@ -57,7 +60,8 @@ namespace InvestimentosCaixa.Api.Aplicacao.Servicos
 
             var (perfilCliente, pontuacao) = await perfilRiscoCliente.CalcularPerfilRiscoCliente(idCliente);
 
-            _logger.LogInformation("Perfil de risco efetuado: Perfil do cliente {perfilCliente}, Pontuação do cliente {pontuacao}", perfilCliente.ToString(), pontuacao);
+            _logger.LogInformation("Perfil de risco efetuado: Perfil do cliente {perfilCliente}, Pontuação do cliente {pontuacao}",
+                perfilCliente.ToString(), pontuacao);
 
             return new PerfilClienteDTOResponse
             {

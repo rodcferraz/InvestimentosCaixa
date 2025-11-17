@@ -18,10 +18,8 @@ namespace InvestimentosCaixa.Api.Infraestrutura.Repositorios
         public async Task<List<Investimento>> ListarInvestimentosPorClienteAsync(int idCliente)
         {
             return await _context.Investimentos
-                    .Include(i => i.InvestimentosCliente)
-                        .ThenInclude(ic => ic.Produto)
-                    .Where(i => i.InvestimentosCliente
-                        .Any(ic => ic.ClienteId == idCliente))
+                    .Include(i => i.Produto)
+                    .Where(i => i.Cliente.Id == idCliente)
                     .ToListAsync();
         }
     }

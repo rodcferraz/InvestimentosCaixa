@@ -15,16 +15,11 @@ namespace InvestimentosCaixa.Api.Infraestrutura.Repositorios
             _dbSet = _context.Set<T>();
 
         }
-        public async Task AdicionarAsync(T entity)
+        public async Task<T> AdicionarAsync(T entity)
         {
             await _dbSet.AddAsync(entity);
             await _context.SaveChangesAsync();
-        }
-
-        public async Task DeletarAsync(T entity)
-        {
-            _dbSet.Remove(entity);
-            await _context.SaveChangesAsync();
+            return entity;
         }
 
         public virtual async Task<List<T>> ListarTodosAsync()
@@ -37,11 +32,11 @@ namespace InvestimentosCaixa.Api.Infraestrutura.Repositorios
             return await _dbSet.FindAsync(id);
         }
 
-        public async Task<T> AtualizarAsync(T aluno)
+        public async Task<T> AtualizarAsync(T entidade)
         {
-            _dbSet.Update(aluno);
+            _dbSet.Update(entidade);
             await _context.SaveChangesAsync();
-            return aluno;
+            return entidade;
         }
 
     }

@@ -6,6 +6,17 @@ namespace InvestimentosCaixa.Api.Dominio.Mappers
 {
     public class ClienteMapper : IClienteMapper
     {
+        public Cliente ToEntity(ClienteDTOCadastroRequest clienteDto)
+        {
+            return new Cliente
+            {
+                Nome = clienteDto.Nome,
+                Email = clienteDto.Email,
+                Liquidez = clienteDto.Liquidez,
+                SenhaHash = clienteDto.Senha
+            };
+        }
+
         public Cliente ToBaseEntity(ClienteDTOBaseRequest clienteDto)
         {
             return new Cliente

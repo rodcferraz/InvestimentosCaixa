@@ -4,7 +4,7 @@ namespace InvestimentosCaixa.Api.Dominio.Servicos.Interfaces
 {
     public interface IClienteServico
     {
-        Task CadastrarClienteAsync(ClienteDTOBaseRequest clienteDto);
+        Task<int> CadastrarClienteAsync(ClienteDTOCadastroRequest clienteDto);
         Task<ClienteDTOResponse?> AtualizarClienteAsync(ClienteDTORequest clienteDto);
         Task<bool> RemoverClienteAsync(int id);
         Task<ClienteDTOResponse> DetalhesClienteAsync(int id);

@@ -17,8 +17,7 @@ namespace InvestimentosCaixa.Api.Infraestrutura.Repositorios
         public override async Task<List<Simulacao>> ListarTodosAsync()
         {
             return await _context.Simulacoes
-                .Include(x => x.SimulacoesCliente)
-                .ThenInclude(x => x.Produto)
+                .Include(x => x.Produto)
                 .ToListAsync();
         }
     }

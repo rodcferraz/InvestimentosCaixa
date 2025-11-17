@@ -4,8 +4,7 @@
     {
         Task<T?> ListarPorIdAsync(int id);
         Task<List<T>> ListarTodosAsync();
-        Task AdicionarAsync(T entidade);
+        Task<T> AdicionarAsync(T entidade);
         Task<T> AtualizarAsync(T entidade);
-        Task DeletarAsync(T entidade);
     }
 }
