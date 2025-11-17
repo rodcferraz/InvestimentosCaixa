@@ -16,10 +16,10 @@ namespace InvestimentosCaixa.Api.Infraestrutura.Repositorios
             _context = context;
         }
 
-        public async Task AtualizarSenhaClienteAsync(int idCliente, string novaSenha)
+        public async Task AtualizarSenhaClienteAsync(string email, string novaSenha)
         {
             await _context.Clientes
-                .Where(c => c.Id == idCliente)
+                .Where(c => c.Email == email && c.Ativo == true)
                 .ExecuteUpdateAsync(setters => setters
                 .SetProperty(c => c.SenhaHash, novaSenha));
 
@@ -30,7 +30,7 @@ namespace InvestimentosCaixa.Api.Infraestrutura.Repositorios
         {
             return await _context.Clientes
                         .FirstOrDefaultAsync(p => 
-                            p.Email.Equals(email, StringComparison.OrdinalIgnoreCase));
+                            p.Email == email && p.Ativo == true);
         }
     }
 }

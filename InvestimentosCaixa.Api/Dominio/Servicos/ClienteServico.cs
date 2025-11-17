@@ -10,15 +10,19 @@ namespace InvestimentosCaixa.Api.Dominio.Servicos
     {
         private readonly IClienteRepositorio _clienteRepositorio;
         private readonly IClienteMapper _clienteMapper;
-        private readonly  ILogger<ClienteServico> _logger;
+        private readonly ILogger<ClienteServico> _logger;
+        private readonly SegurancaServico _segurancaServico;
+
         public ClienteServico(
             IClienteRepositorio clienteRepositorio, 
             IClienteMapper clienteMapper,
-            ILogger<ClienteServico> logger) 
+            ILogger<ClienteServico> logger,
+            SegurancaServico segurancaServico) 
         {
             _clienteRepositorio = clienteRepositorio;
             _clienteMapper = clienteMapper;
             _logger = logger;
+            _segurancaServico = segurancaServico;
         }
 
         public async Task<ClienteDTOResponse?> AtualizarClienteAsync(ClienteDTORequest clienteDto)
@@ -41,22 +45,28 @@ namespace InvestimentosCaixa.Api.Dominio.Servicos
             return _clienteMapper.ToDtoResponse(clienteAtualizado);
         }
 
-        public async Task<bool> AtualizarSenhaClienteAsync(int idCliente, string senhaAtual, string novaSenha)
+        public async Task<bool> AtualizarSenhaClienteAsync(string email, string senhaAtual, string novaSenha)
         {
-            var clienteDb = await _clienteRepositorio.ListarPorIdAsync(idCliente);
+            var clienteDb = await _clienteRepositorio.ListarClienteAtivoPorEmailAsync(email.ToLower());
 
             if (clienteDb == null || clienteDb.Ativo == false)
             {
-                _logger.LogWarning($"Cliente com Id {idCliente} não encontrado para atualização de senha.");
+                _logger.LogWarning($"Cliente com email {email} não encontrado para atualização de senha.");
                 return false;
             }
 
-            if (clienteDb.SenhaHash != senhaAtual)
+            var senhaAtualCriptografada = _segurancaServico.CriptografarPasswordHash(senhaAtual);
+
+            if (clienteDb.SenhaHash != senhaAtualCriptografada)
                 throw new SenhaIncorretaException("Senha informada está incorreta");
 
-            await _clienteRepositorio.AtualizarSenhaClienteAsync(idCliente, novaSenha);
+            var novaSenhaCriptografada = _segurancaServico.CriptografarPasswordHash(novaSenha);
 
-            _logger.LogInformation($"Senha do cliente com Id {idCliente} atualizada com sucesso.");
+            _logger.LogInformation("Criptografando nova senha;");
+
+            await _clienteRepositorio.AtualizarSenhaClienteAsync(email, novaSenhaCriptografada);
+
+            _logger.LogInformation($"Senha do cliente com email {email} atualizada com sucesso.");
 
             return true;
 
@@ -64,6 +74,7 @@ namespace InvestimentosCaixa.Api.Dominio.Servicos
         public async Task<int> CadastrarClienteAsync(ClienteDTOCadastroRequest dto)
         {
             var clienteDb = _clienteMapper.ToEntity(dto);
+            clienteDb.SenhaHash = _segurancaServico.CriptografarPasswordHash(dto.Senha);
 
             _logger.LogInformation($"Cadastrando novo cliente com email: {dto.Email}");
 
@@ -92,7 +103,7 @@ namespace InvestimentosCaixa.Api.Dominio.Servicos
 
         public async Task<ClienteDTOResponse?> ListarClienteAtivoPorEmailAsync(string email)
         {
-            var clienteDb = await _clienteRepositorio.ListarClienteAtivoPorEmailAsync(email);
+            var clienteDb = await _clienteRepositorio.ListarClienteAtivoPorEmailAsync(email.ToLower());
             if (clienteDb == null || clienteDb.Ativo == false)
             {
                 _logger.LogWarning($"Cliente com email {email} não encontrado ou inativo.");

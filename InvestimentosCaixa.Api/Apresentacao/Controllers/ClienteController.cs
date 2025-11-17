@@ -2,6 +2,7 @@
 using InvestimentosCaixa.Api.Aplicacao.Servicos.Interfaces;
 using InvestimentosCaixa.Api.Apresentacao.Atributos;
 using InvestimentosCaixa.Api.Dominio.Exceptions;
+using InvestimentosCaixa.Api.Dominio.Servicos;
 using InvestimentosCaixa.Api.Dominio.Servicos.Interfaces;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -9,7 +10,6 @@ using Microsoft.AspNetCore.Mvc;
 namespace InvestimentosCaixa.Api.Apresentacao.Controllers
 {
     [ApiController]
-    [Route("v1/[controller]")]
     public class ClienteController : ControllerBase
     {
         private readonly IClienteServico _clienteServico;
@@ -26,7 +26,8 @@ namespace InvestimentosCaixa.Api.Apresentacao.Controllers
             _logger = logger;
         }
 
-        [HttpGet]
+        [Authorize]
+        [HttpGet("listar-clientes")]
         public async Task<ActionResult> ListarTodosClientes()
         {
             try
@@ -43,7 +44,8 @@ namespace InvestimentosCaixa.Api.Apresentacao.Controllers
 
         }
 
-        [HttpGet("{id}")]
+        [Authorize]
+        [HttpGet("buscar-cliente/{id}")]
         public async Task<ActionResult> BuscarClientePorId(int id)
         {
             try
@@ -65,7 +67,8 @@ namespace InvestimentosCaixa.Api.Apresentacao.Controllers
             }
         }
 
-        [HttpPost]
+        [Authorize]
+        [HttpPost("cadastrar-cliente")]
         public async Task<ActionResult> CadastrarCliente(ClienteDTOCadastroRequest dto)
         {
             try
@@ -74,6 +77,11 @@ namespace InvestimentosCaixa.Api.Apresentacao.Controllers
                 _logger.LogInformation($"ClienteId {clienteId} cadastrado com sucesso.");
                 return Ok($"ClienteId {clienteId} cadastrado.");
             }
+            catch (ConvertEnumException e)
+            {
+                _logger.LogError($"Erro ao converter enum durante o cadastro do cliente: {e.Message}");
+                return BadRequest(e.Message);
+            }
             catch (Exception e)
             {
                 _logger.LogError($"Erro ao cadastrar cliente: {e.Message}");
@@ -81,7 +89,8 @@ namespace InvestimentosCaixa.Api.Apresentacao.Controllers
             }
         }
 
-        [HttpPut("{id}")]
+        [Authorize]
+        [HttpPut("atualizar-cliente/{id}")]
         public async Task<ActionResult> AtualizarCliente(int id, ClienteDTORequest cliente)
         {
             try
@@ -123,7 +132,8 @@ namespace InvestimentosCaixa.Api.Apresentacao.Controllers
             }
         }
 
-        [HttpDelete("{id}")]
+        [Authorize]
+        [HttpDelete("remover-cliente/{id}")]
         public async Task<ActionResult> DeletarCliente(int id)
         {
             try
@@ -144,6 +154,7 @@ namespace InvestimentosCaixa.Api.Apresentacao.Controllers
             }
         }
 
+        [Authorize]
         [HttpPost("atualizar-senha")]
         public async Task<ActionResult> AtualizarSenhaCliente(AtualizarSenhaClienteDTORequest clienteSenhaDto)
         {
@@ -156,26 +167,27 @@ namespace InvestimentosCaixa.Api.Apresentacao.Controllers
                 }
 
                 await _clienteServico.AtualizarSenhaClienteAsync(
-                    clienteSenhaDto.Id, 
+                    clienteSenhaDto.Email.ToLower(), 
                     clienteSenhaDto.SenhaAtual, 
                     clienteSenhaDto.NovaSenha);
 
-                _logger.LogInformation($"Senha do cliente com ID {clienteSenhaDto.Id} atualizada com sucesso.");
-                return Ok("Senha atuualizada com sucesso");
+                _logger.LogInformation($"Senha do cliente com email {clienteSenhaDto.Email} atualizada com sucesso.");
+                return Ok("Senha atualizada com sucesso");
             }
             catch (SenhaIncorretaException erro)
             {
-                _logger.LogWarning($"Senha incorreta para o cliente com ID {clienteSenhaDto.Id}: {erro.Message}");
+                _logger.LogWarning($"Senha incorreta para o cliente com email {clienteSenhaDto.Email}: {erro.Message}");
                 return BadRequest("Senha incorreta");
             }
             catch(Exception erro)
             {
-                _logger.LogError($"Erro ao atualizar a senha do cliente com ID {clienteSenhaDto.Id}: {erro.Message}");
+                _logger.LogError($"Erro ao atualizar a senha do cliente com email {clienteSenhaDto.Email}: {erro.Message}");
                 return StatusCode(500, "Ocorreu um erro interno no servidor.");
             }
             
         }
 
+        [Authorize]
         [Telemetria]
         [HttpGet("perfil-risco/{clienteId}")]
         public async Task<ActionResult> ExibirPerfilRiscoCliente(int clienteId)

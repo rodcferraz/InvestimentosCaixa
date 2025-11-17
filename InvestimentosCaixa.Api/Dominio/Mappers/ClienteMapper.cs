@@ -1,5 +1,7 @@
 ﻿using InvestimentosCaixa.Api.Aplicacao.DTOs.Clientes;
 using InvestimentosCaixa.Api.Dominio.Entidades;
+using InvestimentosCaixa.Api.Dominio.Enums;
+using InvestimentosCaixa.Api.Dominio.Exceptions;
 using InvestimentosCaixa.Api.Dominio.Mappers.Interfaces;
 
 namespace InvestimentosCaixa.Api.Dominio.Mappers
@@ -8,17 +10,26 @@ namespace InvestimentosCaixa.Api.Dominio.Mappers
     {
         public Cliente ToEntity(ClienteDTOCadastroRequest clienteDto)
         {
+            if (!Enum.IsDefined(typeof(PerfilRiscoClienteEnum), clienteDto.Liquidez))
+            {
+                throw new ConvertEnumException(typeof(PerfilRiscoClienteEnum), clienteDto.Liquidez);
+            }
+
             return new Cliente
             {
                 Nome = clienteDto.Nome,
-                Email = clienteDto.Email,
+                Email = clienteDto.Email.ToLower(),
                 Liquidez = clienteDto.Liquidez,
-                SenhaHash = clienteDto.Senha
             };
         }
 
         public Cliente ToBaseEntity(ClienteDTOBaseRequest clienteDto)
         {
+            if (!Enum.IsDefined(typeof(PerfilRiscoClienteEnum), clienteDto.Liquidez))
+            {
+                throw new ConvertEnumException(typeof(PerfilRiscoClienteEnum), clienteDto.Liquidez);
+            }
+
             return new Cliente
             {
                 Nome = clienteDto.Nome,

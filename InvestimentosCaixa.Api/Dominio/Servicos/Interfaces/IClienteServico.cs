@@ -10,6 +10,6 @@ namespace InvestimentosCaixa.Api.Dominio.Servicos.Interfaces
         Task<ClienteDTOResponse> DetalhesClienteAsync(int id);
         Task<List<ClienteDTOResponse>?> ListarTodosClientesAtivosAsync();
         Task<ClienteDTOResponse?> ListarClienteAtivoPorEmailAsync(string nomeCliente);
-        Task<bool> AtualizarSenhaClienteAsync(int idCliente, string senhaAtual, string novaSenha);
+        Task<bool> AtualizarSenhaClienteAsync(string email, string senhaAtual, string novaSenha);
     }
 }

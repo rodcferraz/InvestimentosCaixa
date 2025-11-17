@@ -4,6 +4,7 @@ using InvestimentosCaixa.Api.Dominio.Entidades;
 using InvestimentosCaixa.Api.Dominio.Enums;
 using InvestimentosCaixa.Api.Dominio.Exceptions;
 using InvestimentosCaixa.Api.Dominio.Servicos.Interfaces;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 // For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
@@ -13,7 +14,6 @@ namespace InvestimentosCaixa.Api.Apresentacao.Controllers
     /// <summary>
     /// Controller de Produtos
     /// </summary>
-    [Route("v1/[controller]")]
     [ApiController]
     public class ProdutoController : ControllerBase
     {
@@ -30,7 +30,8 @@ namespace InvestimentosCaixa.Api.Apresentacao.Controllers
         /// Retornar todos os produtos cadastrados e ativos
         /// </summary>
         /// <returns>Lista de produtos</returns>
-        [HttpGet]
+        [Authorize]
+        [HttpGet("listar-produtos")]
         public async Task<ActionResult> ListarTodosProdutos()
         {
             try
@@ -59,7 +60,8 @@ namespace InvestimentosCaixa.Api.Apresentacao.Controllers
         /// </summary>
         /// <param name="id">Id do produto</param>
         /// <returns>Produto cadastrado</returns>
-        [HttpGet("{id}")]
+        [Authorize]
+        [HttpGet("buscar-produto/{id}")]
         public async Task<ActionResult> BuscarProdutoPorId(int id)
         {
             try
@@ -86,7 +88,8 @@ namespace InvestimentosCaixa.Api.Apresentacao.Controllers
         /// Cadastra um novo produto
         /// </summary>
         /// <param name="produtoDto">Dto de produto para cadastro</param>
-        [HttpPost]
+        [Authorize]
+        [HttpPost("cadastrar-produto")]
         public async Task<ActionResult> CadastrarProduto([FromBody] ProdutoDTOBaseRequest produtoDto)
         {
             try
@@ -119,7 +122,8 @@ namespace InvestimentosCaixa.Api.Apresentacao.Controllers
         /// <param name="id">Id do produto a ser modificado</param>
         /// <param name="produto">ProdutoDTO com campo(s) atualizado(s)</param>
         /// <returns>ProdutoAtualizado</returns>
-        [HttpPut("{id}")]
+        [Authorize]
+        [HttpPut("atualizar-produto/{id}")]
         public async Task<ActionResult> AtualizarProduto(int id, [FromBody] ProdutoDTORequest produto)
         {
             try
@@ -165,7 +169,8 @@ namespace InvestimentosCaixa.Api.Apresentacao.Controllers
         /// Realizar deleção lógica do produto
         /// </summary>
         /// <param name="id"></param>
-        [HttpDelete("{id}")]
+        [Authorize]
+        [HttpDelete("remover-produto/{id}")]
         public async Task<ActionResult> DeletarProduto(int id)
         {
             try
@@ -188,6 +193,7 @@ namespace InvestimentosCaixa.Api.Apresentacao.Controllers
         }
 
         [Telemetria]
+        [Authorize]
         [HttpGet("produtos-recomendados/{perfil}")]
         public async Task<ActionResult> ListarProdutosRecomendadosPorPerfil(int perfil)
         {

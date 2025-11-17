@@ -1,6 +1,7 @@
 ﻿using InvestimentosCaixa.Api.Aplicacao.DTOs.Investimentos;
 using InvestimentosCaixa.Api.Apresentacao.Atributos;
 using InvestimentosCaixa.Api.Dominio.Servicos.Interfaces;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace InvestimentosCaixa.Api.Apresentacao.Controllers
@@ -18,6 +19,7 @@ namespace InvestimentosCaixa.Api.Apresentacao.Controllers
         }
 
         [Telemetria]
+        [Authorize]
         [HttpPost("investimento")]
         public async Task<ActionResult> RealizarInvestimento(InvestimentoDTOBaseRequest request)
         {
@@ -37,6 +39,7 @@ namespace InvestimentosCaixa.Api.Apresentacao.Controllers
         }
 
         [Telemetria]
+        [Authorize]
         [HttpGet("investimentos/{clienteId}")]
         public async Task<ActionResult> InvestimentosPorCliente(int clienteId)
         {

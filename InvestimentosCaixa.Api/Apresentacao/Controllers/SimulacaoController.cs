@@ -2,13 +2,13 @@
 using InvestimentosCaixa.Api.Apresentacao.Atributos;
 using InvestimentosCaixa.Api.Dominio.Entidades;
 using InvestimentosCaixa.Api.Dominio.Servicos.Interfaces;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.IdentityModel.Tokens;
 
 namespace InvestimentosCaixa.Api.Apresentacao.Controllers
 {
     [ApiController]
-    [Route("v1/[controller]")]
     public class SimulacaoController : Controller
     {
         private readonly ISimulacaoServico _simulacaoServico;
@@ -20,6 +20,7 @@ namespace InvestimentosCaixa.Api.Apresentacao.Controllers
         }
 
         [Telemetria]
+        [Authorize]
         [ValidarSimulacao]
         [HttpPost("simular-investimento")]
         public async Task<ActionResult> SimularInvestimento(SimulacaoInvestimentoDTORequest simulacaoRequest)
@@ -48,7 +49,8 @@ namespace InvestimentosCaixa.Api.Apresentacao.Controllers
             }
         }
 
-        [HttpGet]
+        [Authorize]
+        [HttpGet("listar-simulacoes")]
         public async Task<ActionResult> ListarSimulacoes()
         {
             try
@@ -71,6 +73,7 @@ namespace InvestimentosCaixa.Api.Apresentacao.Controllers
         }
 
         [Telemetria]
+        [Authorize]
         [HttpGet("por-produto-dia")]
         public async Task<ActionResult> ListarSimulacoesPorDia()
         {

@@ -1,4 +1,4 @@
-using InvestimentosCaixa.Api.Aplicacao.Servicos;
+﻿using InvestimentosCaixa.Api.Aplicacao.Servicos;
 using InvestimentosCaixa.Api.Aplicacao.Servicos.Interfaces;
 using InvestimentosCaixa.Api.Apresentacao.Filtros;
 using InvestimentosCaixa.Api.Configuracoes;
@@ -10,10 +10,9 @@ using InvestimentosCaixa.Api.Dominio.Servicos.Interfaces;
 using InvestimentosCaixa.Api.Infraestrutura.Data.Context;
 using InvestimentosCaixa.Api.Infraestrutura.Repositorios;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
-using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
-using Microsoft.OpenApi;
+using Microsoft.OpenApi.Models;
 using System.Text;
 using System.Text.Json.Serialization;
 
@@ -25,111 +24,118 @@ namespace InvestimentosCaixa.Api
         {
             var builder = WebApplication.CreateBuilder(args);
 
-            // Add services to the container.
-
+            // ➤ Add services to the container
             builder.Services.AddEndpointsApiExplorer();
 
-            builder.Services.AddSwaggerGen();
-
-            builder.Services.AddSwaggerGen(c => { c.SwaggerDoc("v1", new OpenApiInfo { Title = "Minha API", Version = "v1", Description = "Documenta��o da API com Swagger" }); });
-
-            builder.Services.AddControllers()
-            .AddJsonOptions(options =>
+            // ➤ Swagger
+            builder.Services.AddSwaggerGen(c =>
             {
-                options.JsonSerializerOptions.ReferenceHandler = ReferenceHandler.IgnoreCycles;
-                options.JsonSerializerOptions.MaxDepth = 64; // opcional, aumenta limite
+                c.SwaggerDoc("v1", new OpenApiInfo
+                {
+                    Title = "Minha API",
+                    Version = "v1"
+                });
+
+                // Definição do Bearer (mas sem exigir globalmente)
+                c.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
+                {
+                    Scheme = "Bearer",
+                    BearerFormat = "JWT",
+                    In = ParameterLocation.Header,
+                    Name = "Authorization",
+                    Description = "Insira o token assim: Bearer {seu-token}",
+                    Type = SecuritySchemeType.Http
+                });
+
+                // Apenas aplicar a segurança nos métodos com [Authorize]
+                c.OperationFilter<SwaggerAuthorizeOperationFilter>();
             });
 
-            builder.Services.AddDbContext<InvestimentosCaixaDbContext>(options => 
-                options
-                    .UseSqlite("Data Source=InvestimentoCaixa.db"));
+            builder.Services.AddControllers()
+                .AddJsonOptions(options =>
+                {
+                    options.JsonSerializerOptions.ReferenceHandler = ReferenceHandler.IgnoreCycles;
+                    options.JsonSerializerOptions.MaxDepth = 64;
+                });
+
+            // ➤ Banco
+            builder.Services.AddDbContext<InvestimentosCaixaDbContext>(options =>
+                options.UseSqlite("Data Source=InvestimentoCaixa.db"));
 
             var appSettings = new AppSettings(builder.Configuration);
             builder.Services.AddSingleton(appSettings);
 
+            // ➤ Injeção dos repos / serviços / mappers (seu código)
             builder.Services.AddScoped(typeof(IGenericoRepositorio<>), typeof(GenericoRepositorio<>));
 
-            //Produtos
+            // Produtos
             builder.Services.AddScoped<IProdutoRepositorio, ProdutoRepositorio>();
             builder.Services.AddScoped<IProdutoServico, ProdutoServico>();
             builder.Services.AddScoped<IProdutoMapper, ProdutoMapper>();
 
-            //Clientes
+            // Clientes
             builder.Services.AddScoped<IClienteRepositorio, ClienteRepositorio>();
             builder.Services.AddScoped<IClienteServico, ClienteServico>();
             builder.Services.AddScoped<IClienteMapper, ClienteMapper>();
 
-            //Simulacoes
+            // Simulacoes
             builder.Services.AddScoped<ISimulacaoRepositorio, SimulacaoRepositorio>();
             builder.Services.AddScoped<ISimulacaoServico, SimulacaoServico>();
             builder.Services.AddScoped<ISimulacaoMapper, SimulacaoMapper>();
 
-            //Investimentos
+            // Investimentos
             builder.Services.AddScoped<IInvestimentoRepositorio, InvestimentoRepositorio>();
             builder.Services.AddScoped<IInvestimentoServico, InvestimentoServico>();
             builder.Services.AddScoped<IInvestimentoMapper, InvestimentoMapper>();
 
-            //Telemetrias
+            // Telemetrias
             builder.Services.AddScoped<ITelemetriaRepositorio, TelemetriaRepositorio>();
             builder.Services.AddScoped<ITelemetriaServico, TelemetriaServico>();
             builder.Services.AddScoped<ITelemetriaMapper, TelemetriaMapper>();
 
-            //Perfis
+            // Perfis
             builder.Services.AddScoped<IGerarPerfilClienteServico, GerarPerfilClienteServico>();
             builder.Services.AddScoped<IPerfilPontuacaoClienteServico, PerfilPontuacaoClientePersonalizadoServico>();
-            builder.Services.AddScoped<IPerfilRiscoClienteServico, PerfilRiscoClientePersonalizado>(); 
+            builder.Services.AddScoped<IPerfilRiscoClienteServico, PerfilRiscoClientePersonalizado>();
             builder.Services.AddScoped<ICalculoPerfilRiscoMapper, CalculoPerfilRiscoMapper>();
 
-            //JWT
+            // Segurança
             builder.Services.AddSingleton<JwtServico>();
+            builder.Services.AddSingleton<SegurancaServico>();
 
-            //Customiza��o de mensagem de erro de Model
-            builder.Services.Configure<ApiBehaviorOptions>(options =>
-            {
-                options.InvalidModelStateResponseFactory = context =>
-                {
-                    var erros = context.ModelState
-                        .Where(x => x.Value.Errors.Any())
-                        .Select(x => new {
-                            Campo = x.Key,
-                            Mensagens = x.Value.Errors.Select(e => e.ErrorMessage).ToArray()
-                        });
-
-                    return new BadRequestObjectResult(erros);
-                };
-            });
-
+            // Filtro
             builder.Services.AddScoped<ValidarSimulacaoFiltro>();
 
+            // ➤ JWT Auth
             builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
-            .AddJwtBearer(options =>
-            {
-                var settings = builder.Configuration.GetSection("Jwt");
-                options.TokenValidationParameters = new TokenValidationParameters
+                .AddJwtBearer(options =>
                 {
-                    ValidateIssuer = true,
-                    ValidateAudience = true,
-                    ValidateLifetime = true,
-                    ValidateIssuerSigningKey = true,
-                    ValidIssuer = appSettings.Issuer,
-                    ValidAudience = appSettings.Audience,
-                    IssuerSigningKey = new SymmetricSecurityKey(
-                        Encoding.UTF8.GetBytes(appSettings.Key)
-                    )
-                };
-            });
+                    options.TokenValidationParameters = new TokenValidationParameters
+                    {
+                        ValidateIssuer = true,
+                        ValidateAudience = true,
+                        ValidateLifetime = true,
+                        ValidateIssuerSigningKey = true,
+                        ValidIssuer = appSettings.Issuer,
+                        ValidAudience = appSettings.Audience,
+                        IssuerSigningKey = new SymmetricSecurityKey(
+                            Encoding.UTF8.GetBytes(appSettings.Key))
+                    };
+                });
 
             builder.Services.AddAuthorization();
 
             var app = builder.Build();
 
-            // Configure the HTTP request pipeline.
-
+            // ➤ Pipeline
             app.UseAuthentication();
             app.UseAuthorization();
 
             app.UseSwagger();
-            app.UseSwaggerUI(c => { c.SwaggerEndpoint("/swagger/v1/swagger.json", "Minha API V1"); });
+            app.UseSwaggerUI(c =>
+            {
+                c.SwaggerEndpoint("/swagger/v1/swagger.json", "Minha API V1");
+            });
 
             app.MapControllers();
 
