@@ -23,7 +23,7 @@ namespace InvestimentosCaixa.Api.Dominio.Builder
                 Nome = Produto.Nome,
                 Tipo = ((TipoProdutoEnum)Produto.Tipo).ToString(),
                 Rentabilidade = Produto.Rentabilidade,
-                Risco = ((RiscoProduto)Produto.Risco).ToString(),
+                Risco = ((RiscoProdutoEnum)Produto.Risco).ToString(),
             };
             return this;
         }

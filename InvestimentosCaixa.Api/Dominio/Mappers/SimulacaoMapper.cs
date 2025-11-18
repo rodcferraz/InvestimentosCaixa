@@ -8,14 +8,17 @@ namespace InvestimentosCaixa.Api.Dominio.Mappers
     {
         public SimulacaoDTOResponse ToDtoResponse(Simulacao simulacao)
         {
+            var taxaMensal = simulacao.Produto.Rentabilidade / 12;
+
+            var valorFinal = simulacao.ValorInvestido * (1 + taxaMensal * simulacao.PrazoMeses);
+
             return new SimulacaoDTOResponse
             {
                 Id = simulacao.Id,
                 Produto = simulacao.Produto.Nome,
                 ClienteId = simulacao.IdCliente,
                 ValorInvestido = simulacao.ValorInvestido,
-                ValorFinal = Math.Round(simulacao.ValorInvestido + 
-                            simulacao.ValorInvestido * ((1 + simulacao.Produto.Rentabilidade) / 12),2),
+                ValorFinal = Math.Round(valorFinal, 2),
                 PrazoMeses = simulacao.PrazoMeses,
                 DataSimulacao = simulacao.DataSimulacao.ToString("yyyy-MM-ddTHH:mm:ssZ")
             };

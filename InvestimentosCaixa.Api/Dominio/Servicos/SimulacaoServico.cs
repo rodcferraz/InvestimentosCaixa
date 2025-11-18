@@ -1,11 +1,9 @@
 ﻿using InvestimentosCaixa.Api.Aplicacao.DTOs.Simulacoes;
 using InvestimentosCaixa.Api.Dominio.Builder;
 using InvestimentosCaixa.Api.Dominio.Entidades;
-using InvestimentosCaixa.Api.Dominio.Mappers;
 using InvestimentosCaixa.Api.Dominio.Mappers.Interfaces;
 using InvestimentosCaixa.Api.Dominio.Repositorios.Interfaces;
 using InvestimentosCaixa.Api.Dominio.Servicos.Interfaces;
-using System.Globalization;
 
 namespace InvestimentosCaixa.Api.Dominio.Servicos
 {
@@ -34,23 +32,6 @@ namespace InvestimentosCaixa.Api.Dominio.Servicos
             }
 
             return _simulacaoMapper.ToDtoProdutoDiaList(simulacoes);
-
-            //return simulacoes
-            //    .Select(y => new
-            //    {
-            //        Produto = y.Produto.Nome,
-            //        Data = y.DataSimulacao.Date,
-            //        ValorFinal = y.ValorInvestido * ((1 + y.Produto.Rentabilidade) * y.PrazoMeses)
-            //    })
-            //    .GroupBy(x => new { x.Produto, x.Data })
-            //    .Select(g => new SimulacaoProdutoDiaDTOResponse
-            //    {
-            //        Produto = g.Key.Produto,
-            //        Data = g.Key.Data.ToString("yyyy-MM-dd"),
-            //        QuantidadeSimulacoes = g.Count(),
-            //        MediaValorFinal = g.Average(x => x.ValorFinal)
-            //    })
-            //    .ToList();
         }
 
         public async Task<List<SimulacaoDTOResponse>?> ListarSimulacoesInvestimentos()

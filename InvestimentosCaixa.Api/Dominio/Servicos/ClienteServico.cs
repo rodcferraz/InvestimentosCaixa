@@ -11,13 +11,13 @@ namespace InvestimentosCaixa.Api.Dominio.Servicos
         private readonly IClienteRepositorio _clienteRepositorio;
         private readonly IClienteMapper _clienteMapper;
         private readonly ILogger<ClienteServico> _logger;
-        private readonly SegurancaServico _segurancaServico;
+        private readonly ISegurancaServico _segurancaServico;
 
         public ClienteServico(
             IClienteRepositorio clienteRepositorio, 
             IClienteMapper clienteMapper,
             ILogger<ClienteServico> logger,
-            SegurancaServico segurancaServico) 
+            ISegurancaServico segurancaServico) 
         {
             _clienteRepositorio = clienteRepositorio;
             _clienteMapper = clienteMapper;

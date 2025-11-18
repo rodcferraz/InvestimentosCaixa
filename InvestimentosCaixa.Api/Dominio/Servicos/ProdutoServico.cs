@@ -43,10 +43,10 @@ namespace InvestimentosCaixa.Api.Dominio.Servicos
                 return null;
             }
 
-            if (!Enum.TryParse(produtoDto.Risco, out RiscoProduto riscoProduto))
+            if (!Enum.TryParse(produtoDto.Risco, out RiscoProdutoEnum riscoProduto))
             {
-                _logger.LogError($"Erro ao converter enum {nameof(RiscoProduto)} durante a atualização do produto {produtoDto.Nome}.");
-                throw new ConvertEnumException(typeof(RiscoProduto), produtoDto.Risco);
+                _logger.LogError($"Erro ao converter enum {nameof(RiscoProdutoEnum)} durante a atualização do produto {produtoDto.Nome}.");
+                throw new ConvertEnumException(typeof(RiscoProdutoEnum), produtoDto.Risco);
             }
 
             if (!Enum.TryParse(produtoDto.Tipo, out TipoProdutoEnum tipoProduto))
@@ -128,7 +128,7 @@ namespace InvestimentosCaixa.Api.Dominio.Servicos
                     Enumerable.Empty< ProdutoDTOResponse >().ToList() :
                     produtos
                        .Where(x => 
-                            x.Risco == ((RiscoProduto)idPerfil).ToString())
+                            x.Risco == ((RiscoProdutoEnum)idPerfil).ToString())
                        .ToList();
         }
 

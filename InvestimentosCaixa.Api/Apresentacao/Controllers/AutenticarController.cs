@@ -1,6 +1,7 @@
 ﻿using InvestimentosCaixa.Api.Aplicacao.DTOs.Autenticar;
 using InvestimentosCaixa.Api.Dominio.Repositorios.Interfaces;
 using InvestimentosCaixa.Api.Dominio.Servicos;
+using InvestimentosCaixa.Api.Dominio.Servicos.Interfaces;
 using Microsoft.AspNetCore.Mvc;
 
 namespace InvestimentosCaixa.Api.Apresentacao.Controllers
@@ -8,13 +9,13 @@ namespace InvestimentosCaixa.Api.Apresentacao.Controllers
     public class AutenticarController : ControllerBase
     {
         private readonly JwtServico _jwt;
-        private readonly SegurancaServico _segurancaServico;
+        private readonly ISegurancaServico _segurancaServico;
         private readonly IClienteRepositorio _clienteRepositorio;
         private readonly ILogger<AutenticarController> _logger;
 
         public AutenticarController(
             JwtServico jwt, 
-            SegurancaServico segurancaServico,
+            ISegurancaServico segurancaServico,
             IClienteRepositorio clienteRepositorio, 
             ILogger<AutenticarController> logger)
         {

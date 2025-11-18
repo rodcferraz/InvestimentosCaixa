@@ -4,6 +4,6 @@ namespace InvestimentosCaixa.Api.Dominio.Mappers.Interfaces
 {
     public interface ICalculoPerfilRiscoMapper
     {
-        CalculoPerfilRiscoEnum ToPerfilRiscoClienteEnum(string perfil);
+        CalculoParaPerfilRiscoEnum ParaPerfilRiscoClienteEnum(string perfil);
     }
 }

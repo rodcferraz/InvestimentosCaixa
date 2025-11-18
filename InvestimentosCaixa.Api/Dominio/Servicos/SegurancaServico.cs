@@ -1,9 +1,10 @@
 ﻿using InvestimentosCaixa.Api.Configuracoes;
+using InvestimentosCaixa.Api.Dominio.Servicos.Interfaces;
 using System.Security.Cryptography;
 
 namespace InvestimentosCaixa.Api.Dominio.Servicos
 {
-    public class SegurancaServico
+    public class SegurancaServico : ISegurancaServico
     {
         private readonly AppSettings _appSettings;
         public SegurancaServico(AppSettings appSettings)

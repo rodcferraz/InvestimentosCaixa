@@ -97,11 +97,11 @@ namespace InvestimentosCaixa.Api
             builder.Services.AddScoped<IGerarPerfilClienteServico, GerarPerfilClienteServico>();
             builder.Services.AddScoped<IPerfilPontuacaoClienteServico, PerfilPontuacaoClientePersonalizadoServico>();
             builder.Services.AddScoped<IPerfilRiscoClienteServico, PerfilRiscoClientePersonalizado>();
-            builder.Services.AddScoped<ICalculoPerfilRiscoMapper, CalculoPerfilRiscoMapper>();
+            builder.Services.AddScoped<ICalculoPerfilRiscoMapper, CalculoParaPerfilRiscoMapper>();
 
             // Segurança
             builder.Services.AddSingleton<JwtServico>();
-            builder.Services.AddSingleton<SegurancaServico>();
+            builder.Services.AddScoped<ISegurancaServico, SegurancaServico>();
 
             // Filtro
             builder.Services.AddScoped<ValidarSimulacaoFiltro>();

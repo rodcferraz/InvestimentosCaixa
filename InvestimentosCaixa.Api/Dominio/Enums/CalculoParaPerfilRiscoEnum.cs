@@ -1,6 +1,6 @@
 ﻿namespace InvestimentosCaixa.Api.Dominio.Enums
 {
-    public enum CalculoPerfilRiscoEnum
+    public enum CalculoParaPerfilRiscoEnum
     {
         Personalizado,
         Anbima

@@ -32,15 +32,15 @@ namespace InvestimentosCaixa.Api.Aplicacao.Servicos
 
         public async Task<PerfilClienteDTOResponse> GerarPerfilCiente(int idCliente)
         {
-            var metodoCalculoPerfilRisco = _calculoPerfilRiscoMapper.ToPerfilRiscoClienteEnum(_appSettings.CalculoPerfilRisco);
+            var metodoCalculoPerfilRisco = _calculoPerfilRiscoMapper.ParaPerfilRiscoClienteEnum(_appSettings.CalculoPerfilRisco);
 
             _logger.LogInformation("Iniciando cálculo do perfil do cliente {IdCliente} utilizando o método {MetodoCalculo}.",
                 idCliente, metodoCalculoPerfilRisco.ToString());
 
             IPerfilPontuacaoClienteServico perfilPontuacao = metodoCalculoPerfilRisco switch
             {
-                CalculoPerfilRiscoEnum.Personalizado => new PerfilPontuacaoClientePersonalizadoServico(),
-                CalculoPerfilRiscoEnum.Anbima => throw new NotImplementedException("Calculo de perfil de risco ANBIMA não implementado."),
+                CalculoParaPerfilRiscoEnum.Personalizado => new PerfilPontuacaoClientePersonalizadoServico(),
+                CalculoParaPerfilRiscoEnum.Anbima => throw new NotImplementedException("Calculo de perfil de risco ANBIMA não implementado."),
                 _ => throw new NotImplementedException("Calculo de perfil de risco não implementado.")       
             };
 
@@ -48,11 +48,11 @@ namespace InvestimentosCaixa.Api.Aplicacao.Servicos
 
             IPerfilRiscoClienteServico perfilRiscoCliente = metodoCalculoPerfilRisco switch
             {
-                CalculoPerfilRiscoEnum.Personalizado => new PerfilRiscoClientePersonalizado(
+                CalculoParaPerfilRiscoEnum.Personalizado => new PerfilRiscoClientePersonalizado(
                                                                 perfilPontuacao, 
                                                                 _investimentoServico, 
                                                                 _clienteServico),
-                CalculoPerfilRiscoEnum.Anbima => throw new NotImplementedException("Calculo de perfil de risco ANBIMA não implementado."),
+                CalculoParaPerfilRiscoEnum.Anbima => throw new NotImplementedException("Calculo de perfil de risco ANBIMA não implementado."),
                 _ => throw new NotImplementedException("Calculo de perfil de risco não implementado.")
             };
 

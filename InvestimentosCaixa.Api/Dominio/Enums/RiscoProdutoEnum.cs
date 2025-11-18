@@ -1,6 +1,6 @@
 ﻿namespace InvestimentosCaixa.Api.Dominio.Enums
 {
-    public enum RiscoProduto
+    public enum RiscoProdutoEnum
     {
         Baixo = 1,
         Moderado = 2,
