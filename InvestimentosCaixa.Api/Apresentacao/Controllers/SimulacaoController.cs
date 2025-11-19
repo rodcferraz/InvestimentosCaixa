@@ -1,6 +1,10 @@
 ﻿using InvestimentosCaixa.Api.Aplicacao.DTOs.Simulacoes;
 using InvestimentosCaixa.Api.Apresentacao.Atributos;
 using InvestimentosCaixa.Api.Dominio.Entidades;
+using InvestimentosCaixa.Api.Dominio.Enums;
+using InvestimentosCaixa.Api.Dominio.Exceptions;
+using InvestimentosCaixa.Api.Dominio.Mappers.Interfaces;
+using InvestimentosCaixa.Api.Dominio.Repositorios.Interfaces;
 using InvestimentosCaixa.Api.Dominio.Servicos.Interfaces;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -12,35 +16,67 @@ namespace InvestimentosCaixa.Api.Apresentacao.Controllers
     public class SimulacaoController : Controller
     {
         private readonly ISimulacaoServico _simulacaoServico;
+        private readonly IClienteServico _clienteServico;
+        private readonly IProdutoRepositorio _produtoRepositorio;
         private readonly ILogger<SimulacaoController> _logger;
-        public SimulacaoController(ISimulacaoServico simulacaoServico, ILogger<SimulacaoController> logger)
+        public SimulacaoController(
+            ISimulacaoServico simulacaoServico,
+            ILogger<SimulacaoController> logger,
+            IClienteServico clienteServico,
+            IProdutoRepositorio produtoRepositorio)
         {
             _simulacaoServico = simulacaoServico;
             _logger = logger;
+            _clienteServico = clienteServico;
+            _produtoRepositorio = produtoRepositorio;
         }
 
         [Telemetria]
         [Authorize]
-        [ValidarSimulacao]
         [HttpPost("simular-investimento")]
         public async Task<ActionResult> SimularInvestimento(SimulacaoInvestimentoDTORequest simulacaoRequest)
         {
             try
             {
-                var produto = HttpContext.Items["Produto"] as Produto;
+                if (!Enum.TryParse(simulacaoRequest.TipoProduto, out TipoProdutoEnum TipoProduto))
+                {
+                    _logger.LogError($"Erro ao converter enum {nameof(TipoProdutoEnum)} durante a busca do produto por tipo {simulacaoRequest.TipoProduto}.");
+                    throw new ConvertEnumException(typeof(TipoProdutoEnum), simulacaoRequest.TipoProduto);
+                }
+
+                var clienteDb = await _clienteServico.DetalhesClienteAsync(simulacaoRequest.ClienteId);
+
+                if (clienteDb == null)
+                {
+                    _logger.LogWarning($"Cliente com {simulacaoRequest.ClienteId} não encontrado.");
+                    return NotFound($"Cliente não encontrado");
+                }
+
+                var produtoDb = await _produtoRepositorio.ListarProdutoPorTipo((int)TipoProduto);
+
+                if (produtoDb == null)
+                {
+                    _logger.LogWarning($"Tipo de produto{simulacaoRequest.TipoProduto} não encontrado.");
+                    return NotFound($"Produto não encontrado");
+                }
 
                 var simulacaoFinalizada = 
                     await _simulacaoServico.SimularInvestimento(
-                        produto,
+                        produtoDb,
                         simulacaoRequest);
 
                 if (simulacaoFinalizada == null)
                 {
-                    _logger.LogError("Erro ao processar a simulação de investimento.");
+                    _logger.LogError($"Erro ao processar a simulação de investimento para o clienteId {simulacaoRequest.ClienteId} com produtoId {produtoDb.Id}.");
                     return BadRequest("Erro ao processar a simulação de investimento.");
                 }
 
                 return Ok(simulacaoFinalizada);
+            }
+            catch (ConvertEnumException erro)
+            {
+                _logger.LogError($"Erro ao converter enum durante a simulação de investimento: {erro.Message}");
+                return BadRequest(erro.Message);
             }
             catch(Exception erro)
             {

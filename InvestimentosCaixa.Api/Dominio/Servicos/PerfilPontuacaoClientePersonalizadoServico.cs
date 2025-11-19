@@ -1,7 +1,4 @@
-﻿using InvestimentosCaixa.Api.Aplicacao.DTOs.Perfis;
-using InvestimentosCaixa.Api.Dominio.Entidades;
-using InvestimentosCaixa.Api.Dominio.Enums;
-using InvestimentosCaixa.Api.Dominio.Repositorios.Interfaces;
+﻿using InvestimentosCaixa.Api.Dominio.Enums;
 using InvestimentosCaixa.Api.Dominio.Servicos.Interfaces;
 
 namespace InvestimentosCaixa.Api.Dominio.Servicos
@@ -17,7 +14,7 @@ namespace InvestimentosCaixa.Api.Dominio.Servicos
             else return 100;
         }
 
-        public int GerarPerfilMovimentacoesaCliente(int quantidadeMovimentacoes)
+        public int GerarPerfilMovimentacoesCliente(int quantidadeMovimentacoes)
         {
             if (quantidadeMovimentacoes <= 2) return 20;
             else if (quantidadeMovimentacoes <= 5) return 50;

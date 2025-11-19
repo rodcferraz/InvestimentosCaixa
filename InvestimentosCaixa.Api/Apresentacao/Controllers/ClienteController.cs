@@ -33,6 +33,13 @@ namespace InvestimentosCaixa.Api.Apresentacao.Controllers
             try
             {
                 var listarProdutos = await _clienteServico.ListarTodosClientesAtivosAsync();
+
+                if (listarProdutos == null || listarProdutos.Count == 0)
+                {
+                    _logger.LogInformation("Nenhum cliente ativo encontrado.");
+                    return NotFound("Nenhum cliente ativo encontrado.");
+                }
+
                 _logger.LogInformation("Listagem de clientes realizada com sucesso.");
                 return Ok(listarProdutos);
             }
@@ -184,7 +191,6 @@ namespace InvestimentosCaixa.Api.Apresentacao.Controllers
                 _logger.LogError($"Erro ao atualizar a senha do cliente com email {clienteSenhaDto.Email}: {erro.Message}");
                 return StatusCode(500, "Ocorreu um erro interno no servidor.");
             }
-            
         }
 
         [Authorize]

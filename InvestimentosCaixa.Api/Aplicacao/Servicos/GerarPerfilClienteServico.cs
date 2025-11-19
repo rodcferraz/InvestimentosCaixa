@@ -2,6 +2,7 @@
 using InvestimentosCaixa.Api.Aplicacao.Servicos.Interfaces;
 using InvestimentosCaixa.Api.Configuracoes;
 using InvestimentosCaixa.Api.Dominio.Enums;
+using InvestimentosCaixa.Api.Dominio.Factories.Interfaces;
 using InvestimentosCaixa.Api.Dominio.Mappers.Interfaces;
 using InvestimentosCaixa.Api.Dominio.Servicos;
 using InvestimentosCaixa.Api.Dominio.Servicos.Interfaces;
@@ -11,50 +12,37 @@ namespace InvestimentosCaixa.Api.Aplicacao.Servicos
     public class GerarPerfilClienteServico : IGerarPerfilClienteServico
     {
         private readonly AppSettings _appSettings;
-        private readonly IInvestimentoServico _investimentoServico;
-        private readonly IClienteServico _clienteServico;
         private readonly ILogger<GerarPerfilClienteServico> _logger;
-        private readonly ICalculoPerfilRiscoMapper _calculoPerfilRiscoMapper;
+        private readonly IMetodoCalculoPontuacaoPerfilRiscoClienteFactory _metodoCalculoPontuacaoFactory;
+        private readonly IGerarPerfilRiscoClienteFactory _gerarPerfilRiscoClienteFactory;
+        private readonly ICalculoPerfilRiscoMapper _calculoMapper;
 
         public GerarPerfilClienteServico(
             AppSettings appSettings,
-            IInvestimentoServico investimentoServico,
-            IClienteServico clienteServico,
+            ICalculoPerfilRiscoMapper calculoMapper,
             ILogger<GerarPerfilClienteServico> logger,
-            ICalculoPerfilRiscoMapper calculoPerfilRiscoMapper)
+            IMetodoCalculoPontuacaoPerfilRiscoClienteFactory metodoCalculoPontuacaoFactory,
+            IGerarPerfilRiscoClienteFactory gerarPerfilRiscoClienteFactory)
         {
             _appSettings = appSettings;
-            _investimentoServico = investimentoServico;
-            _clienteServico = clienteServico;
+            _calculoMapper = calculoMapper;
             _logger = logger;
-            _calculoPerfilRiscoMapper = calculoPerfilRiscoMapper;
+            _metodoCalculoPontuacaoFactory = metodoCalculoPontuacaoFactory;
+            _gerarPerfilRiscoClienteFactory = gerarPerfilRiscoClienteFactory;
         }
 
         public async Task<PerfilClienteDTOResponse> GerarPerfilCiente(int idCliente)
         {
-            var metodoCalculoPerfilRisco = _calculoPerfilRiscoMapper.ParaPerfilRiscoClienteEnum(_appSettings.CalculoPerfilRisco);
+            var metodoCalculoPerfilRisco = _calculoMapper.ParaPerfilRiscoClienteEnum(_appSettings.CalculoPerfilRisco);
 
             _logger.LogInformation("Iniciando cálculo do perfil do cliente {IdCliente} utilizando o método {MetodoCalculo}.",
                 idCliente, metodoCalculoPerfilRisco.ToString());
 
-            IPerfilPontuacaoClienteServico perfilPontuacao = metodoCalculoPerfilRisco switch
-            {
-                CalculoParaPerfilRiscoEnum.Personalizado => new PerfilPontuacaoClientePersonalizadoServico(),
-                CalculoParaPerfilRiscoEnum.Anbima => throw new NotImplementedException("Calculo de perfil de risco ANBIMA não implementado."),
-                _ => throw new NotImplementedException("Calculo de perfil de risco não implementado.")       
-            };
+            var metodoCalculo = _metodoCalculoPontuacaoFactory.Criar(metodoCalculoPerfilRisco);
 
-            _logger.LogInformation($"Cálculo de pontuacao utilizando o método: {perfilPontuacao.GetType().Name} .");
+            _logger.LogInformation($"Cálculo de pontuacao utilizando o método: {metodoCalculo.GetType().Name} .");
 
-            IPerfilRiscoClienteServico perfilRiscoCliente = metodoCalculoPerfilRisco switch
-            {
-                CalculoParaPerfilRiscoEnum.Personalizado => new PerfilRiscoClientePersonalizado(
-                                                                perfilPontuacao, 
-                                                                _investimentoServico, 
-                                                                _clienteServico),
-                CalculoParaPerfilRiscoEnum.Anbima => throw new NotImplementedException("Calculo de perfil de risco ANBIMA não implementado."),
-                _ => throw new NotImplementedException("Calculo de perfil de risco não implementado.")
-            };
+            var perfilRiscoCliente = _gerarPerfilRiscoClienteFactory.Criar(metodoCalculoPerfilRisco, metodoCalculo);
 
             _logger.LogInformation($"Definição de perfil de risco utilizando o método: {perfilRiscoCliente.GetType().Name} .");
 

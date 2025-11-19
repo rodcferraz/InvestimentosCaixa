@@ -62,9 +62,9 @@ namespace InvestimentosCaixa.Api.Dominio.Servicos
                 IdProduto = produto.Id
             };
 
-            _ = await _simulacaoRepositorio.AdicionarAsync(simulacao);
+            var simulacaoDb = await _simulacaoRepositorio.AdicionarAsync(simulacao);
 
-            if (simulacao.Id == 0)
+            if (simulacaoDb.Id == 0)
             {
                 _logger.LogError($"Erro ao salvar a simulação do cliente {simulacaoInvestimento.ClienteId} " +
                     $"de investimento do produto {produto.Id} no banco de dados.");

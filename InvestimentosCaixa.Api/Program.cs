@@ -2,6 +2,8 @@
 using InvestimentosCaixa.Api.Aplicacao.Servicos.Interfaces;
 using InvestimentosCaixa.Api.Apresentacao.Filtros;
 using InvestimentosCaixa.Api.Configuracoes;
+using InvestimentosCaixa.Api.Dominio.Factories;
+using InvestimentosCaixa.Api.Dominio.Factories.Interfaces;
 using InvestimentosCaixa.Api.Dominio.Mappers;
 using InvestimentosCaixa.Api.Dominio.Mappers.Interfaces;
 using InvestimentosCaixa.Api.Dominio.Repositorios.Interfaces;
@@ -43,7 +45,7 @@ namespace InvestimentosCaixa.Api
                     BearerFormat = "JWT",
                     In = ParameterLocation.Header,
                     Name = "Authorization",
-                    Description = "Insira o token assim: Bearer {seu-token}",
+                    Description = "Insira o token assim:{seu-token}",
                     Type = SecuritySchemeType.Http
                 });
 
@@ -102,6 +104,12 @@ namespace InvestimentosCaixa.Api
             // Segurança
             builder.Services.AddSingleton<JwtServico>();
             builder.Services.AddScoped<ISegurancaServico, SegurancaServico>();
+
+            //Factories
+            builder.Services.AddScoped<IMetodoCalculoPontuacaoPerfilRiscoClienteFactory,
+                MetodoCalculoPontuacaoPerfilRiscoClienteFactory>();
+            builder.Services.AddScoped<IGerarPerfilRiscoClienteFactory,
+                GerarPerfilRiscoClienteFactory>();
 
             // Filtro
             builder.Services.AddScoped<ValidarSimulacaoFiltro>();

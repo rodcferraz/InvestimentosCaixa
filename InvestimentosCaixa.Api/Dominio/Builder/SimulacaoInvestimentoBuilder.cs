@@ -34,7 +34,7 @@ namespace InvestimentosCaixa.Api.Dominio.Builder
 
             ResultadoSimulacao = new ResultadoSimulacaoDTOResponse
             {
-                ValorFinal = simulacaoRequest.Valor * rentabilidadeTotal,
+                ValorFinal = simulacaoRequest.Valor * (1 + rentabilidadeTotal),
                 RentabilidadeEfetiva = rentabilidadeTotal,
                 PrazoMeses = simulacaoRequest.PrazoMeses
             };

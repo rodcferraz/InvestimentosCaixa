@@ -35,7 +35,7 @@ namespace InvestimentosCaixa.Api.Dominio.Servicos
             var quantidadeMovimentacoes = investimentosCliente.Count();
 
             var pontuacaoCarteira = _perfilPontuacaoClienteServico.GerarPerfilCarteiraCliente(totalInvestido);
-            var pontuacaoMovimentacoes = _perfilPontuacaoClienteServico.GerarPerfilMovimentacoesaCliente(quantidadeMovimentacoes);
+            var pontuacaoMovimentacoes = _perfilPontuacaoClienteServico.GerarPerfilMovimentacoesCliente(quantidadeMovimentacoes);
             var pontuacaoLiquidez =_perfilPontuacaoClienteServico.GerarPerfilLiquidezCliente((PerfilRiscoClienteEnum) cliente.Liquidez);
 
             var pontuacaoTotal = pontuacaoCarteira * PONTUACAO_CARTEIRA + 

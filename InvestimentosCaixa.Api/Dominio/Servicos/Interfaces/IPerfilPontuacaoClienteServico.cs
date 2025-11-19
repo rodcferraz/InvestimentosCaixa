@@ -5,7 +5,7 @@ namespace InvestimentosCaixa.Api.Dominio.Servicos.Interfaces
     public interface IPerfilPontuacaoClienteServico
     {
         int GerarPerfilCarteiraCliente(decimal totalInvestido);
-        int GerarPerfilMovimentacoesaCliente(int quantidadeMovimentacoes);
+        int GerarPerfilMovimentacoesCliente(int quantidadeMovimentacoes);
         int GerarPerfilLiquidezCliente(PerfilRiscoClienteEnum perfilClienteLiquidez);
     }
 }

@@ -107,26 +107,28 @@ namespace InvestimentosCaixa.Testes.Apresentacao.Controllers.ProdutoControllerTe
 
             // Assert
             var badRequest = Assert.IsType<BadRequestObjectResult>(result);
-            Assert.Equal(ConvertEnumException.MensagemErroConverEnum(typeof(TipoProdutoEnum), "CDB2"),
+            Assert.Equal(ConvertEnumException.MensagemErroConversaoEnum(typeof(TipoProdutoEnum), "CDB2"),
                         badRequest.Value);
         }
 
         [Fact]
-        public async Task AtualizarProduto_LancaExcecaoGeral_RetornaBadRequest()
+        public async Task AtualizarProduto_LancaExcecaoGeral_RetornaStatus500()
         {
             // Arrange
             var dto = new ProdutoDTORequest { Id = 1, Nome = "Caixa CDB" };
 
             _fixture.ProdutoServicoMock
-                .Setup(s => s.ListarProdutoAtivoPorNomeAsync("Caixa CDB"))
-                .ThrowsAsync(new Exception("Erro"));
+                .Setup(s => s.ListarProdutoAtivoPorNomeAsync(dto.Nome))
+                .ThrowsAsync(new Exception("Erro inesperado"));
 
             // Act
             var result = await _fixture.Controller.AtualizarProduto(1, dto);
 
             // Assert
-            var badRequest = Assert.IsType<BadRequestObjectResult>(result);
-            Assert.Equal("Não foi possível atualizar o produto: Erro", badRequest.Value);
+            var objectResult = Assert.IsType<ObjectResult>(result);
+
+            Assert.Equal(500, objectResult.StatusCode);
+            Assert.Equal("Erro interno no servidor.", objectResult.Value);
         }
     }
 }

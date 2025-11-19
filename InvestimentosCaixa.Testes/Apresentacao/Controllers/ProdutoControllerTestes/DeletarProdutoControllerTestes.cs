@@ -62,8 +62,9 @@ namespace InvestimentosCaixa.Testes.Apresentacao.Controllers.ProdutoControllerTe
             var result = await _fixture.Controller.DeletarProduto(id);
 
             // Assert
-            var badRequest = Assert.IsType<BadRequestObjectResult>(result);
-            Assert.Equal("Não foi possível deletar o produto: Erro", badRequest.Value);
+            var badRequest = Assert.IsType<ObjectResult>(result);
+            Assert.Equal(500, badRequest.StatusCode);
+            Assert.Equal("Erro interno no servidor.", badRequest.Value);
         }
     }
 }

@@ -139,9 +139,12 @@ namespace InvestimentosCaixa.Api.Dominio.Servicos
 
             _logger.LogInformation($"Listagem de produtos ativos realizada com sucesso.");
 
-            return (produtosAtivos != null || produtosAtivos.Count != 0) ?
-                _produtoMapper.ToDtoResponseList(produtosAtivos) :
-                Enumerable.Empty<ProdutoDTOResponse>().ToList();
+            if (produtosAtivos == null || produtosAtivos.Count == 0)
+            {
+                return Enumerable.Empty<ProdutoDTOResponse>().ToList();
+            }
+
+            return _produtoMapper.ToDtoResponseList(produtosAtivos);
         }
 
         public async Task<bool> RemoverProdutoAsync(int idAluno)

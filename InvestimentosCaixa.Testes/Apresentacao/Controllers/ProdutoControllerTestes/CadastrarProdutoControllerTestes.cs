@@ -23,7 +23,7 @@ namespace InvestimentosCaixa.Testes.Apresentacao.Controllers.ProdutoControllerTe
 
             _fixture.ProdutoServicoMock
                 .Setup(s => s.AdicionarProdutoAsync(dto))
-                .Returns(Task.CompletedTask);
+                .ReturnsAsync(123);
 
             // Act
             var result = await _fixture.Controller.CadastrarProduto(dto);
@@ -48,7 +48,7 @@ namespace InvestimentosCaixa.Testes.Apresentacao.Controllers.ProdutoControllerTe
 
             // Assert
             var badRequest = Assert.IsType<BadRequestObjectResult>(result);
-            Assert.Equal(ConvertEnumException.MensagemErroConverEnum(typeof(TipoProdutoEnum), "CDB2"),
+            Assert.Equal(ConvertEnumException.MensagemErroConversaoEnum(typeof(TipoProdutoEnum), "CDB2"),
                         badRequest.Value);
         }
 
@@ -66,8 +66,9 @@ namespace InvestimentosCaixa.Testes.Apresentacao.Controllers.ProdutoControllerTe
             var result = await _fixture.Controller.CadastrarProduto(dto);
 
             // Assert
-            var badRequest = Assert.IsType<BadRequestObjectResult>(result);
-            Assert.Equal("Não foi possível cadastrar produto: Erro", badRequest.Value);
+            var objectResult = Assert.IsType<ObjectResult>(result);
+            Assert.Equal(500, objectResult.StatusCode);
+            Assert.Equal("Erro interno no servidor.", objectResult.Value);
         }
     }
 }

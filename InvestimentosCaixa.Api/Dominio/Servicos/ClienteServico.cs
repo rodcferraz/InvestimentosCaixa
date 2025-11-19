@@ -1,4 +1,5 @@
 ﻿using InvestimentosCaixa.Api.Aplicacao.DTOs.Clientes;
+using InvestimentosCaixa.Api.Dominio.Enums;
 using InvestimentosCaixa.Api.Dominio.Exceptions;
 using InvestimentosCaixa.Api.Dominio.Mappers.Interfaces;
 using InvestimentosCaixa.Api.Dominio.Repositorios.Interfaces;
@@ -27,6 +28,11 @@ namespace InvestimentosCaixa.Api.Dominio.Servicos
 
         public async Task<ClienteDTOResponse?> AtualizarClienteAsync(ClienteDTORequest clienteDto)
         {
+            if (!Enum.IsDefined(typeof(PerfilRiscoClienteEnum), clienteDto.Liquidez))
+            {
+                throw new ConvertEnumException(typeof(PerfilRiscoClienteEnum), clienteDto.Liquidez);
+            }
+
             var clienteDb = await _clienteRepositorio.ListarPorIdAsync(clienteDto.Id);
 
             if (clienteDb == null)
