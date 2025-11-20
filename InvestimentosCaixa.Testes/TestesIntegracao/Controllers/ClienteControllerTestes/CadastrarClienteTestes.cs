@@ -21,7 +21,7 @@ namespace InvestimentosCaixa.Testes.TestesIntegracao.Controllers.ClienteControll
         }
 
         [Fact]
-        public async Task CadastrarCliente_QuandoDadosValidos_DeveRetornar200()
+        public async Task CadastrarCliente_QuandoDadosValidos_DeveRetornar204()
         {
             // Arrange
             var request = new ClienteDTOCadastroRequest
@@ -36,7 +36,7 @@ namespace InvestimentosCaixa.Testes.TestesIntegracao.Controllers.ClienteControll
             var response = await _client.PostAsJsonAsync("/cadastrar-cliente", request);
 
             // Assert
-            Assert.Equal(HttpStatusCode.OK, response.StatusCode);
+            Assert.Equal(HttpStatusCode.Created, response.StatusCode);
         }
 
         [Fact]

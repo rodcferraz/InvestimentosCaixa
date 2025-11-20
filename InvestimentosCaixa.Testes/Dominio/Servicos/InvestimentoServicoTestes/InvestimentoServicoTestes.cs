@@ -33,6 +33,15 @@ namespace InvestimentosCaixa.Testes.Dominio.Servicos.InvestimentoServicoTestes
                 Data = DateTime.UtcNow
             };
 
+            var investimentoDtoResponse = new InvestimentoDTOResponse()
+            {
+                Id = 1,
+                Tipo = "CDB",
+                Rentabilidade = 0.12m,
+                Valor = 1000.00m,
+                Data = DateTime.UtcNow.ToString()
+            };
+
             _fixture.InvestimentoMapperMock
                 .Setup(m => m.ToBaseEntity(It.IsAny<InvestimentoDTOBaseRequest>()))
                 .Returns(investimento);
@@ -41,13 +50,18 @@ namespace InvestimentosCaixa.Testes.Dominio.Servicos.InvestimentoServicoTestes
                 .Setup(r => r.AdicionarAsync(It.IsAny<Investimento>()))
                 .ReturnsAsync(investimento);
 
+            _fixture.InvestimentoMapperMock
+                .Setup(m => m.ToDtoResponse(It.IsAny<Investimento>()))
+                .Returns(investimentoDtoResponse);
+
             // Act
             var resultado = await _fixture.Servico.CadastrarInvestimentoAsync(investimentoDto);
 
             // Assert
-            Assert.Equal(1, resultado);
+            Assert.Equal(1, resultado.Id);
             _fixture.InvestimentoMapperMock.Verify(m => m.ToBaseEntity(investimentoDto), Times.Once);
             _fixture.InvestimentoRepositorioMock.Verify(r => r.AdicionarAsync(investimento), Times.Once);
+            _fixture.InvestimentoMapperMock.Verify(m => m.ToDtoResponse(investimento), Times.Once);
         }
 
         [Fact]

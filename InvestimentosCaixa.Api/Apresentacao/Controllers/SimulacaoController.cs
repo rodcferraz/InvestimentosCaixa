@@ -12,6 +12,14 @@ using Microsoft.IdentityModel.Tokens;
 
 namespace InvestimentosCaixa.Api.Apresentacao.Controllers
 {
+    /// <summary>
+    /// Fornece endpoints para gerenciar simulações de investimento, incluindo a criação de simulações, a recuperação de simulações,
+    /// e a listagem de simulações por critérios específicos.
+    /// </summary>
+    /// <remarks>Este controlador lida com operações relacionadas a simulações de investimento.
+    /// Ele depende de serviços injetados para processamento de simulação, gerenciamento de clientes e
+    /// recuperação de produtos.
+    /// </remarks>
     [ApiController]
     public class SimulacaoController : Controller
     {
@@ -31,6 +39,17 @@ namespace InvestimentosCaixa.Api.Apresentacao.Controllers
             _produtoRepositorio = produtoRepositorio;
         }
 
+        /// <summary>
+        /// Simula um investimento com base nos dados da solicitação fornecida.
+        /// </summary>
+        /// <param name="simulacaoRequest">O objeto de solicitação contendo os parâmetros da simulação de investimento, 
+        /// incluindo o ID do cliente e o tipo do produto.
+        /// </param>
+        /// <returns>Retorna o resultado da simulação</returns>
+        /// <response code = "201"> Simulação de Investimento realizado com sucesso </response>
+        /// <response code = "400"> Requisição inválida </response>
+        /// <response code = "404"> Requisição não encontrada </response>
+        /// <response code = "500"> Erro interno no servidor </response>
         [Telemetria]
         [Authorize]
         [HttpPost("simular-investimento")]
@@ -71,7 +90,7 @@ namespace InvestimentosCaixa.Api.Apresentacao.Controllers
                     return BadRequest("Erro ao processar a simulação de investimento.");
                 }
 
-                return Ok(simulacaoFinalizada);
+                return Created("simular-investimento", simulacaoFinalizada);
             }
             catch (ConvertEnumException erro)
             {
@@ -85,6 +104,15 @@ namespace InvestimentosCaixa.Api.Apresentacao.Controllers
             }
         }
 
+        /// <summary>
+        /// Recupera uma lista de simulações de investimento.
+        /// </summary>
+        /// <remarks>Este método retorna todas as simulações de investimento disponíveis. </remarks>
+        /// <returns>Retorna uma lista de simulações de investimento</returns>
+        /// <response code = "200"> Listagem de simulação de investimento realizado com sucesso </response>
+        /// <response code = "204"> Nenhuma listagem encontrada </response>
+        /// <response code = "500"> Erro interno no servidor </response>
+        [Telemetria]
         [Authorize]
         [HttpGet("listar-simulacoes")]
         public async Task<ActionResult> ListarSimulacoes()
@@ -108,6 +136,13 @@ namespace InvestimentosCaixa.Api.Apresentacao.Controllers
             }
         }
 
+        /// <summary>
+        /// Recupera uma lista de simulações de investimento agrupadas por produto para o dia atual.
+        /// </summary>
+        /// <returns>Retorna uma lista de simulações de investimento por dia.</returns>
+        /// <response code = "200"> Listagem de simulação de investimento para o dia realizado com sucesso </response>
+        /// <response code = "204"> Nenhuma listagem encontrada </response>
+        /// <response code = "500"> Erro interno no servidor </response>
         [Telemetria]
         [Authorize]
         [HttpGet("por-produto-dia")]

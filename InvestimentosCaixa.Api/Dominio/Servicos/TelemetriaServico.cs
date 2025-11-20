@@ -6,6 +6,9 @@ using InvestimentosCaixa.Api.Dominio.Servicos.Interfaces;
 
 namespace InvestimentosCaixa.Api.Dominio.Servicos
 {
+    /// <summary>
+    /// Serviço responsável por gerenciar operações relacionadas à utilização de endpoints
+    /// </summary>
     public class TelemetriaServico : ITelemetriaServico
     {
         private readonly ILogger<TelemetriaServico> _logger;
@@ -20,6 +23,11 @@ namespace InvestimentosCaixa.Api.Dominio.Servicos
             _telemetriaRepositorio = telemetriaRepositorio;
             _telemetriaMapper = telemetriaMapper;
         }
+
+        /// <summary>
+        /// Registra parâmetros de telemetria para um endpoint específico
+        /// </summary>
+        /// <param name="telemetria">Entidade de <see cref="Telemetria"/> a ser cadastrada</param>
         public async Task CadastrarTelemetria(Telemetria telemetria)
         {
             await _telemetriaRepositorio.AdicionarAsync(telemetria);
@@ -27,6 +35,10 @@ namespace InvestimentosCaixa.Api.Dominio.Servicos
             _logger.LogInformation($"Telemetria com id {telemetria.Id} para o  método {telemetria.NomeRota} foi cadastrado.");
         }
 
+        /// <summary>
+        /// Lista todo o histórico de telemetria registrado por período e quantidade de vezes que foram chamadas
+        /// </summary>
+        /// <returns>Listagem de telemetria efetuada</returns>
         public async Task<TelemetriaDTOResponse?> ListarRelatorioTelemetria()
         {
             var telemetrias = await _telemetriaRepositorio.ListarTodosAsync();

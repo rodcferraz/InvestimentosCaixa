@@ -1,5 +1,6 @@
 ﻿using InvestimentosCaixa.Api.Aplicacao.DTOs.Investimentos;
 using InvestimentosCaixa.Api.Apresentacao.Atributos;
+using InvestimentosCaixa.Api.Dominio.Entidades;
 using InvestimentosCaixa.Api.Dominio.Servicos;
 using InvestimentosCaixa.Api.Dominio.Servicos.Interfaces;
 using Microsoft.AspNetCore.Authorization;
@@ -7,6 +8,14 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace InvestimentosCaixa.Api.Apresentacao.Controllers
 {
+    /// <summary>
+    /// Fornece endpoints para gerenciar investimentos, incluindo a criação de novos investimentos 
+    /// e a recuperação de investimentos associados a um cliente específico.
+    /// </summary>
+    /// <remarks>
+    /// Esse controller requer autenticação para todos os métodos. 
+    /// Possui integração com serviços de produtos e clientes.
+    /// </remarks>
     [ApiController]
     public class InvestimentoController : Controller
     {
@@ -16,7 +25,7 @@ namespace InvestimentosCaixa.Api.Apresentacao.Controllers
         private readonly IProdutoServico _produtoServico;
 
         public InvestimentoController(
-            IInvestimentoServico investimentoServico, 
+            IInvestimentoServico investimentoServico,
             ILogger<InvestimentoController> logger,
             IClienteServico clienteServico,
             IProdutoServico produtoServico)
@@ -27,6 +36,15 @@ namespace InvestimentosCaixa.Api.Apresentacao.Controllers
             _produtoServico = produtoServico;
         }
 
+        /// <summary>
+        /// Processa um pedido de investimento para um cliente e produto específico.
+        /// </summary>
+        /// <remarks> Este método requer autenticação e é monitorado por telemetria</remarks>
+        /// <param name="request">Pedido de investimento que contém cliente id, produto id e valor.</param>
+        /// <returns>Investimento cadastrado</returns>
+        /// <response code = "201"> Investimento realizado com sucesso </response>
+        /// <response code = "404"> Solicitação não encontrada </response>
+        /// <response code = "500"> Erro interno no servidor </response>
         [Telemetria]
         [Authorize]
         [HttpPost("investimento")]
@@ -50,11 +68,11 @@ namespace InvestimentosCaixa.Api.Apresentacao.Controllers
                     return NotFound($"Produto não encontrado");
                 }
 
-                var idInvestimento = await _investimentoServico.CadastrarInvestimentoAsync(request);
+                var investimentoCriado = await _investimentoServico.CadastrarInvestimentoAsync(request);
 
-                _logger.LogInformation($"Investimento realizado com sucesso. Id do investimento: {idInvestimento}");
+                _logger.LogInformation($"Investimento realizado com sucesso. Id do investimento: {investimentoCriado.Id}");
 
-                return Ok("Investimento realizado com sucesso!");
+                return Created("/investimento", investimentoCriado);
             }
             catch (Exception erro)
             {
@@ -63,6 +81,14 @@ namespace InvestimentosCaixa.Api.Apresentacao.Controllers
             }
         }
 
+        /// <summary>
+        ///  Retorna uma lista de investimento associado a um cliente
+        /// </summary>
+        /// <remarks>Este método requer autenticação e é monitorado por telemetria</remarks>
+        /// <param name="clienteId">Identificador único do cliente cujos investimentos deverão ser retornados</param>
+        /// <returns>Lista de investimentos do cliente</returns>
+        /// <response code = "200"> Investimentos listados com sucesso </response>
+        /// <response code = "500"> Erro interno no servidor </response>
         [Telemetria]
         [Authorize]
         [HttpGet("investimentos/{clienteId}")]

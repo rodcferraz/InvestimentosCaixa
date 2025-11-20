@@ -1,8 +1,12 @@
 ﻿using InvestimentosCaixa.Api.Dominio.Enums;
+using InvestimentosCaixa.Api.Dominio.Exceptions;
 using InvestimentosCaixa.Api.Dominio.Servicos.Interfaces;
 
 namespace InvestimentosCaixa.Api.Dominio.Servicos
 {
+    /// <summary>
+    /// Orquestrador para definir o perfil de risco do cliente utilizando os cálculos de pontuação e seus respectivos pesos
+    /// </summary>
     public class PerfilRiscoClientePersonalizado : IPerfilRiscoClienteServico
     {
         private readonly IPerfilPontuacaoClienteServico _perfilPontuacaoClienteServico;
@@ -23,6 +27,12 @@ namespace InvestimentosCaixa.Api.Dominio.Servicos
             _clienteServico = clienteServico;
         }
 
+        /// <summary>
+        /// Realiza cálculos para gerar o perfil de risco do cliente
+        /// </summary>
+        /// <param name="idCliente">Id do cliente para que será gerado o perfil de risco</param>
+        /// <returns>Perfil de risco e pontuação associada</returns>
+        /// <exception cref="EntityNotFoundException">Lança exceção quando cliente não for encontrado</exception>
         public async Task<(PerfilRiscoClienteEnum, decimal)> CalcularPerfilRiscoCliente(int idCliente)
         {
             PerfilRiscoClienteEnum perfilRisco = default;
@@ -30,6 +40,10 @@ namespace InvestimentosCaixa.Api.Dominio.Servicos
             var investimentosCliente = await _investimentoServico.ListarInvestimentosPorClienteAsync(idCliente);
             var cliente = await _clienteServico.DetalhesClienteAsync(idCliente);
 
+            if (cliente == null)
+            {
+                throw new EntityNotFoundException($"Cliente com id {idCliente} não encontrado");
+            }
 
             var totalInvestido = investimentosCliente.Sum(x => x.Valor);
             var quantidadeMovimentacoes = investimentosCliente.Count();

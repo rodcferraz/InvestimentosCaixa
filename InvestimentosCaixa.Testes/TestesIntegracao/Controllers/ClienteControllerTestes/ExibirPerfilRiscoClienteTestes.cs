@@ -21,7 +21,7 @@ namespace InvestimentosCaixa.Testes.TestesIntegracao.Controllers.ClienteControll
         }
 
         [Fact]
-        public async Task ExibirPerfilRisco_Valido_DeveRetornar200()
+        public async Task ExibirPerfilRisco_Valido_DeveRetornarOK()
         {
             using (var scope = _factory.Services.CreateScope())
             {
@@ -45,7 +45,7 @@ namespace InvestimentosCaixa.Testes.TestesIntegracao.Controllers.ClienteControll
         }
 
         [Fact]
-        public async Task ExibirPerfilRisco_QuandoConvertEnumException_DeveRetornar400()
+        public async Task ExibirPerfilRisco_QuandoConvertEnumException_DeveRetornarBadRequest()
         {
             // Cria uma instância isolada da factory substituindo o serviço
 
@@ -94,7 +94,7 @@ namespace InvestimentosCaixa.Testes.TestesIntegracao.Controllers.ClienteControll
         }
 
         [Fact]
-        public async Task ExibirPerfilRisco_QuandoExcecaoGeral_DeveRetornar500()
+        public async Task ExibirPerfilRisco_QuandoExcecaoGeral_DeveRetornarInternalServerError()
         {
             var factoryFake = _factory.WithWebHostBuilder(builder =>
             {

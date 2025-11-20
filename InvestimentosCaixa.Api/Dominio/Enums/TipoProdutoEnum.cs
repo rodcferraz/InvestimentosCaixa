@@ -1,5 +1,8 @@
 ﻿namespace InvestimentosCaixa.Api.Dominio.Enums
 {
+    /// <summary>
+    /// Enum que representa os tipos de produtos de investimento disponíveis.
+    /// </summary>
     public enum TipoProdutoEnum
     {
         TesouroSelic = 1,

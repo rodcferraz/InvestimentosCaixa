@@ -58,7 +58,7 @@ namespace InvestimentosCaixa.Testes.TestesIntegracao.Controllers.SimulacaoContro
             var response = await _client.PostAsJsonAsync("/simular-investimento", request);
 
             // Assert
-            Assert.Equal(HttpStatusCode.OK, response.StatusCode);
+            Assert.Equal(HttpStatusCode.Created, response.StatusCode);
 
             var result = await response.Content.ReadFromJsonAsync<SimulacaoInvestimentoDTOResponse>();
             Assert.NotNull(result);

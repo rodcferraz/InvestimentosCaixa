@@ -29,8 +29,8 @@ namespace InvestimentosCaixa.Testes.Apresentacao.Controllers.ProdutoControllerTe
             var result = await _fixture.Controller.CadastrarProduto(dto);
 
             // Assert
-            var ok = Assert.IsType<OkObjectResult>(result);
-            Assert.Equal("Produto cadastrado com sucesso!", ok.Value);
+            var ok = Assert.IsType<CreatedResult>(result);
+            Assert.Equal(201, ok.StatusCode);
         }
 
         [Fact]

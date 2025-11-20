@@ -6,8 +6,16 @@ using InvestimentosCaixa.Api.Dominio.Mappers.Interfaces;
 
 namespace InvestimentosCaixa.Api.Dominio.Mappers
 {
+    /// <summary>
+    /// Classe de conversão entre a entidade Produto e seus respectivos DTOs.
+    /// </summary>
     public class ProdutoMapper : IProdutoMapper
     {
+        /// <summary>
+        /// Converte uma entidade <see cref="Produto"/> para <see cref="ProdutoDTOResponse"/> .
+        /// </summary>
+        /// <param name="produto"></param>
+        /// <returns></returns>
         public ProdutoDTOResponse ToDtoResponse(Produto produto)
         {
             return new ProdutoDTOResponse
@@ -20,6 +28,9 @@ namespace InvestimentosCaixa.Api.Dominio.Mappers
             };
         }
 
+        /// <summary>
+        /// Converte uma lista de entidades <see cref="Produto"/> para uma lista de <see cref="ProdutoDTOResponse"/> .
+        /// </summary>
         public List<ProdutoDTOResponse> ToDtoResponseList(IEnumerable<Produto> produtos)
         {
             return produtos
@@ -27,6 +38,9 @@ namespace InvestimentosCaixa.Api.Dominio.Mappers
                 .ToList();
         }
 
+        /// <summary>
+        /// Converte um DTO de requisição <see cref="ProdutoDTOBaseRequest"/> para a entidade <see cref="Produto"/> .
+        /// </summary>
         public Produto ToBaseEntity(ProdutoDTOBaseRequest produtoDto)
         {
             if (!Enum.TryParse(produtoDto.Tipo, out TipoProdutoEnum tipoProduto))
@@ -48,6 +62,9 @@ namespace InvestimentosCaixa.Api.Dominio.Mappers
             };
         }
 
+        /// <summary>
+        /// Converte um DTO de requisição <see cref="ProdutoDTORequest"/> para a entidade <see cref="Produto"/> .
+        /// </summary>
         public Produto ToEntity(ProdutoDTORequest produtoDto)
         {
             var produto = ToBaseEntity(produtoDto);

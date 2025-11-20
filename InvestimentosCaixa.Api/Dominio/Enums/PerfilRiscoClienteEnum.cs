@@ -2,6 +2,9 @@
 
 namespace InvestimentosCaixa.Api.Dominio.Enums
 {
+    /// <summary>
+    /// Enum de perfil de risco do cliente
+    /// </summary>
     public enum PerfilRiscoClienteEnum
     {
         [Description("Perfil com baixa movimentação, foco em liquidez")]

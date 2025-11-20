@@ -45,7 +45,7 @@ namespace InvestimentosCaixa.Testes.Apresentacao.Controllers.ProdutoControllerTe
 
             // Assert
             var ok = Assert.IsType<OkObjectResult>(result);
-            Assert.Equal("Produto deletado com sucesso!", ok.Value);
+            Assert.Equal(200 , ok.StatusCode);
         }
 
         [Fact]

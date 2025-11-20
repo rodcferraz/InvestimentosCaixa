@@ -4,11 +4,12 @@ using InvestimentosCaixa.Api.Configuracoes;
 using InvestimentosCaixa.Api.Dominio.Enums;
 using InvestimentosCaixa.Api.Dominio.Factories.Interfaces;
 using InvestimentosCaixa.Api.Dominio.Mappers.Interfaces;
-using InvestimentosCaixa.Api.Dominio.Servicos;
-using InvestimentosCaixa.Api.Dominio.Servicos.Interfaces;
 
 namespace InvestimentosCaixa.Api.Aplicacao.Servicos
 {
+    /// <summary>
+    /// Responsável por gerar o perfil de risco do cliente
+    /// </summary>
     public class GerarPerfilClienteServico : IGerarPerfilClienteServico
     {
         private readonly AppSettings _appSettings;
@@ -31,6 +32,13 @@ namespace InvestimentosCaixa.Api.Aplicacao.Servicos
             _gerarPerfilRiscoClienteFactory = gerarPerfilRiscoClienteFactory;
         }
 
+        /// <summary>
+        /// Gera o perfil de risco do cliente. O factory <see cref="IGerarPerfilRiscoClienteFactory"/>será responsável por orquestrar o cálculo
+        /// efetivado pela fábrica de métodos de cálculo <see cref="IMetodoCalculoPontuacaoPerfilRiscoClienteFactory"/> a fim 
+        /// de gerar o perfil de risco do cliente.
+        /// </summary>
+        /// <param name="idCliente">Id do cliente para geração do perfil</param>
+        /// <returns>Resposta para o perfil do cliente gerado.</returns>
         public async Task<PerfilClienteDTOResponse> GerarPerfilCiente(int idCliente)
         {
             var metodoCalculoPerfilRisco = _calculoMapper.ParaPerfilRiscoClienteEnum(_appSettings.CalculoPerfilRisco);
@@ -48,7 +56,7 @@ namespace InvestimentosCaixa.Api.Aplicacao.Servicos
 
             var (perfilCliente, pontuacao) = await perfilRiscoCliente.CalcularPerfilRiscoCliente(idCliente);
 
-            _logger.LogInformation("Perfil de risco efetuado: Perfil do cliente {perfilCliente}, Pontuação do cliente {pontuacao}",
+            _logger.LogInformation($"Perfil de risco efetuado: Perfil do cliente {perfilCliente}, Pontuação do cliente {pontuacao}",
                 perfilCliente.ToString(), pontuacao);
 
             return new PerfilClienteDTOResponse

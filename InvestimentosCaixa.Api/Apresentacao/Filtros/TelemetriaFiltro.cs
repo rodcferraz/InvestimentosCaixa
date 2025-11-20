@@ -26,8 +26,11 @@ namespace InvestimentosCaixa.Api.Apresentacao.Filtros
 
             timer.Stop();
 
+            var path = context.HttpContext.Request.Path.ToString();
+            var primeiroSegmento = path.Split('/', StringSplitOptions.RemoveEmptyEntries).FirstOrDefault() ?? "root";
+
             var telemetria = new Telemetria();
-            telemetria.NomeRota = context.HttpContext.Request.Path;
+            telemetria.NomeRota = $"/{primeiroSegmento}";
             telemetria.TempoResposta = timer.ElapsedMilliseconds;
             telemetria.DataRegistro = DateTime.UtcNow;
 

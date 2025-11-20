@@ -4,8 +4,14 @@ using InvestimentosCaixa.Api.Dominio.Mappers.Interfaces;
 
 namespace InvestimentosCaixa.Api.Dominio.Mappers
 {
+    /// <summary>
+    /// Serviço responsável por gerenciar operações relacionadas à utilização de endpoints
+    /// </summary>
     public class TelemetriaMapper : ITelemetriaMapper
     {
+        /// <summary>
+        /// Realiza o mapeamento de uma lista de <see cref="List{Telemetria}"/> para <see cref="TelemetriaDTOResponse"/>
+        /// </summary>
         public TelemetriaDTOResponse ToDtoResponse(List<Telemetria> telemetrias)
         {
             var servicos = telemetrias

@@ -7,6 +7,9 @@ using InvestimentosCaixa.Api.Dominio.Servicos.Interfaces;
 
 namespace InvestimentosCaixa.Api.Dominio.Servicos
 {
+    /// <summary>
+    /// Classe de serviço responsável pelas operações relacionadas aos clientes.
+    /// </summary>
     public class ClienteServico : IClienteServico
     {
         private readonly IClienteRepositorio _clienteRepositorio;
@@ -26,6 +29,13 @@ namespace InvestimentosCaixa.Api.Dominio.Servicos
             _segurancaServico = segurancaServico;
         }
 
+        /// <summary>
+        /// Atualiza os dados de um cliente existente.
+        /// </summary>
+        /// <param name="clienteDto">Dto do cliente</param>
+        /// <returns>Cliente atualizado</returns>
+        /// <exception cref="ConvertEnumException">Lança exceção caso o <see cref="PerfilRiscoClienteEnum"/>
+        /// não esteja definido internamente</exception>
         public async Task<ClienteDTOResponse?> AtualizarClienteAsync(ClienteDTORequest clienteDto)
         {
             if (!Enum.IsDefined(typeof(PerfilRiscoClienteEnum), clienteDto.Liquidez))
@@ -42,6 +52,7 @@ namespace InvestimentosCaixa.Api.Dominio.Servicos
             }
 
             clienteDb.Nome = clienteDto.Nome;
+            clienteDb.Email = clienteDto.Email;
             clienteDb.Liquidez = clienteDto.Liquidez;
 
             var clienteAtualizado = await _clienteRepositorio.AtualizarAsync(clienteDb);
@@ -51,6 +62,14 @@ namespace InvestimentosCaixa.Api.Dominio.Servicos
             return _clienteMapper.ToDtoResponse(clienteAtualizado);
         }
 
+        /// <summary>
+        /// Atualiza a senha do cliente
+        /// </summary>
+        /// <param name="email">Email do cliente</param>
+        /// <param name="senhaAtual">Senha atual do cliente</param>
+        /// <param name="novaSenha">Nova senha do cliente</param>
+        /// <returns>Confirmação de atualização de senha</returns>
+        /// <exception cref="SenhaIncorretaException"></exception>
         public async Task<bool> AtualizarSenhaClienteAsync(string email, string senhaAtual, string novaSenha)
         {
             var clienteDb = await _clienteRepositorio.ListarClienteAtivoPorEmailAsync(email.ToLower());
@@ -77,6 +96,12 @@ namespace InvestimentosCaixa.Api.Dominio.Servicos
             return true;
 
         }
+
+        /// <summary>
+        /// Realiza o cadastro de um novo cliente.
+        /// </summary>
+        /// <param name="dto">Dados de requisição para a crição de um novo cliente</param>
+        /// <returns>Retorna Id do cliente</returns>
         public async Task<int> CadastrarClienteAsync(ClienteDTOCadastroRequest dto)
         {
             var clienteDb = _clienteMapper.ToEntity(dto);
@@ -90,6 +115,11 @@ namespace InvestimentosCaixa.Api.Dominio.Servicos
             return cliente.Id;
         }
 
+        /// <summary>
+        /// Detalhar um cliente pelo Id.
+        /// </summary>
+        /// <param name="id">Id do cliente</param>
+        /// <returns>Dados do cliente</returns>
         public async Task<ClienteDTOResponse> DetalhesClienteAsync(int id)
         {
             var cliente = await _clienteRepositorio.ListarPorIdAsync(id);
@@ -107,6 +137,11 @@ namespace InvestimentosCaixa.Api.Dominio.Servicos
             return _clienteMapper.ToDtoResponse(cliente);
         }
 
+        /// <summary>
+        /// Lista clientes ativos por email
+        /// </summary>
+        /// <param name="email">Email do cliente</param>
+        /// <returns>Retorna dados do cliente</returns>
         public async Task<ClienteDTOResponse?> ListarClienteAtivoPorEmailAsync(string email)
         {
             var clienteDb = await _clienteRepositorio.ListarClienteAtivoPorEmailAsync(email.ToLower());
@@ -120,6 +155,10 @@ namespace InvestimentosCaixa.Api.Dominio.Servicos
             return _clienteMapper.ToDtoResponse(clienteDb);
         }
 
+        /// <summary>
+        /// Listar todos os clientes ativos
+        /// </summary>
+        /// <returns>Lista de todos os clientes ativos</returns>
         public async Task<List<ClienteDTOResponse>?> ListarTodosClientesAtivosAsync()
         {
             var clientes = await _clienteRepositorio.ListarTodosAsync();
@@ -132,6 +171,11 @@ namespace InvestimentosCaixa.Api.Dominio.Servicos
                 null;
         }
 
+        /// <summary>
+        /// Remove logicamente um cliente pelo Id.
+        /// </summary>
+        /// <param name="id">Id do cliente</param>
+        /// <returns>Retorna confirmação da deleção lógica do cliente</returns>
         public async Task<bool> RemoverClienteAsync(int id)
         {
             var produtoDb = await _clienteRepositorio.ListarPorIdAsync(id);

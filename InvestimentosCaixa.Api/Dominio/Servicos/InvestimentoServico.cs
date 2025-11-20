@@ -6,6 +6,9 @@ using Microsoft.IdentityModel.Tokens;
 
 namespace InvestimentosCaixa.Api.Dominio.Servicos
 {
+    /// <summary>
+    /// Realiza operações relacionadas a investimentos, como cadastro e listagem de investimentos por cliente.
+    /// </summary>
     public class InvestimentoServico : IInvestimentoServico
     {
         private readonly IInvestimentoRepositorio _investimentoRepositorio;
@@ -22,7 +25,12 @@ namespace InvestimentosCaixa.Api.Dominio.Servicos
             _logger = logger;
         }
 
-        public async Task<int> CadastrarInvestimentoAsync(InvestimentoDTOBaseRequest investimentoDto)
+        /// <summary>
+        /// Cadastra o investimento solicitado pelo cliente
+        /// </summary>
+        /// <param name="investimentoDto">Dados de requisição para investimento</param>
+        /// <returns>Retorna dados de investimento cadastrado</returns>
+        public async Task<InvestimentoDTOResponse> CadastrarInvestimentoAsync(InvestimentoDTOBaseRequest investimentoDto)
         {
             var investimentoEntity = _investimentoMapper.ToBaseEntity(investimentoDto);
 
@@ -30,9 +38,14 @@ namespace InvestimentosCaixa.Api.Dominio.Servicos
 
             _logger.LogInformation($"Investimento cadastrado: {investimentoEntity}");
 
-            return investimentoEntity.Id;
+            return _investimentoMapper.ToDtoResponse(investimentoEntity);
         }
 
+        /// <summary>
+        /// Lista todos os investimentos realizados por um cliente específico
+        /// </summary>
+        /// <param name="idCliente">Id do cliente</param>
+        /// <returns>Lista de todos os investimentos do cliente</returns>
         public async Task<List<InvestimentoDTOResponse>> ListarInvestimentosPorClienteAsync(int idCliente)
         {
             var investimentos = await _investimentoRepositorio.ListarInvestimentosPorClienteAsync(idCliente);

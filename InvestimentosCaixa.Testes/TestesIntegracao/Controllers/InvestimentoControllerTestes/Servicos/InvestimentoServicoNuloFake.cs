@@ -5,7 +5,7 @@ namespace InvestimentosCaixa.Testes.TestesIntegracao.Controllers.InvestimentoCon
 {
     public class InvestimentoServicoNuloFake : IInvestimentoServico
     {
-        public Task<int> CadastrarInvestimentoAsync(InvestimentoDTOBaseRequest investimentoDto)
+        public Task<InvestimentoDTOResponse> CadastrarInvestimentoAsync(InvestimentoDTOBaseRequest investimentoDto)
         {
             throw new NotImplementedException();
         }

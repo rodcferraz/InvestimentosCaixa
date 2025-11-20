@@ -4,6 +4,9 @@ using InvestimentosCaixa.Api.Dominio.Enums;
 
 namespace InvestimentosCaixa.Api.Dominio.Builder
 {
+    /// <summary>
+    /// Gerar resposta de simulação de investimento.
+    /// </summary>
     public class SimulacaoInvestimentoBuilder
     {
         public ProdutoValidadoDTOResponse ProdutoValidado;
@@ -15,6 +18,9 @@ namespace InvestimentosCaixa.Api.Dominio.Builder
             Produto = produto;
         }
 
+        /// <summary>
+        /// Adiciona informações do produto à simulação.
+        /// </summary>
         public SimulacaoInvestimentoBuilder ComProdutoValidado()
         {
             ProdutoValidado = new ProdutoValidadoDTOResponse
@@ -28,6 +34,11 @@ namespace InvestimentosCaixa.Api.Dominio.Builder
             return this;
         }
 
+        /// <summary>
+        /// Adiciona informações de cálculo de investimento à simulação
+        /// </summary>
+        /// <param name="simulacaoRequest"></param>
+        /// <returns></returns>
         public SimulacaoInvestimentoBuilder ComResultadoSimulacao(SimulacaoInvestimentoDTORequest simulacaoRequest)
         {
             var rentabilidadeTotal = Produto.Rentabilidade /12 * simulacaoRequest.PrazoMeses;
@@ -42,12 +53,20 @@ namespace InvestimentosCaixa.Api.Dominio.Builder
             return this;
         }
 
+        /// <summary>
+        /// Adicioa data de simulação à resposta
+        /// </summary>
+        /// <returns></returns>
         public SimulacaoInvestimentoBuilder ComDataSimulacao(Simulacao simulacao)
         {
             DataSimulacao = simulacao.DataSimulacao;
             return this;
         }
 
+        /// <summary>
+        /// Agrega todas as informações e constrói o objeto de resposta
+        /// </summary>
+        /// <returns></returns>
         public SimulacaoInvestimentoDTOResponse Build()
         {
             return new SimulacaoInvestimentoDTOResponse

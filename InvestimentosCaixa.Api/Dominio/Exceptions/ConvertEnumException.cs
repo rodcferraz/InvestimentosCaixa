@@ -1,5 +1,8 @@
 ﻿namespace InvestimentosCaixa.Api.Dominio.Exceptions
 {
+    /// <summary>
+    /// Lança erro de exceção quando a conversão de um valor para enum falha
+    /// </summary>
     public class ConvertEnumException : Exception
     {
         public ConvertEnumException(Type tipoEnum, object valorInvalido) 

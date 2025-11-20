@@ -22,7 +22,7 @@ namespace InvestimentosCaixa.Testes.TestesIntegracao.Controllers.InvestimentoCon
         }
 
         [Fact]
-        public async Task RealizarInvestimento_QuandoDadosValidos_RetornaOk()
+        public async Task RealizarInvestimento_QuandoDadosValidos_RetornaCreated()
         {
             // Arrange: preparar dados no banco (cliente e produto, se necessário)
             using (var scope = _factory.Services.CreateScope())
@@ -63,10 +63,7 @@ namespace InvestimentosCaixa.Testes.TestesIntegracao.Controllers.InvestimentoCon
             var response = await _client.PostAsJsonAsync("/investimento", request);
 
             // Assert
-            Assert.Equal(HttpStatusCode.OK, response.StatusCode);
-
-            var body = await response.Content.ReadAsStringAsync();
-            Assert.Contains("Investimento realizado com sucesso", body);
+            Assert.Equal(HttpStatusCode.Created, response.StatusCode);
         }
 
         [Fact]

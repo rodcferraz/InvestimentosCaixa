@@ -7,6 +7,9 @@ using InvestimentosCaixa.Api.Dominio.Servicos.Interfaces;
 
 namespace InvestimentosCaixa.Api.Dominio.Servicos
 {
+    /// <summary>
+    /// Serviço responsável por gerenciar operações relacionadas a produtos.
+    /// </summary>
     public class ProdutoServico : IProdutoServico
     {
         private readonly IProdutoMapper _produtoMapper;
@@ -22,6 +25,11 @@ namespace InvestimentosCaixa.Api.Dominio.Servicos
             _logger = logger;
         }
 
+        /// <summary>
+        /// Adiciona produto informado
+        /// </summary>
+        /// <param name="produtoDto">Requisição para cadastro de produto</param>
+        /// <returns>Id do produto gerado</returns>
         public async Task<int> AdicionarProdutoAsync(ProdutoDTOBaseRequest produtoDto)
         {
             var produtoDb = _produtoMapper.ToBaseEntity(produtoDto);
@@ -33,6 +41,13 @@ namespace InvestimentosCaixa.Api.Dominio.Servicos
             return produtoDb.Id;
         }
 
+        /// <summary>
+        /// Atualiza produto informado
+        /// </summary>
+        /// <param name="produtoDto">Requisição para atualização de produto</param>
+        /// <returns>Produto com campos atualizados</returns>
+        /// <exception cref="ConvertEnumException">Lança exceção quando <see cref="RiscoProdutoEnum"/> 
+        /// ou <see cref="TipoProdutoEnum"/> não foram informados corretamente</exception>
         public async Task<ProdutoDTOResponse?> AtualizarProdutoAsync(ProdutoDTORequest produtoDto)
         {
             var produtoDb = await _produtoRepositorio.ListarPorIdAsync(produtoDto.Id);
@@ -67,10 +82,15 @@ namespace InvestimentosCaixa.Api.Dominio.Servicos
             return _produtoMapper.ToDtoResponse(produtoAtualizado);
         }
 
+        /// <summary>
+        /// Exibe detalhes do produto pelo Id
+        /// </summary>
+        /// <param name="id">Id do produto</param>
+        /// <returns>Dados do produto</returns>
         public async Task<ProdutoDTOResponse?> DetalhesProdutoAsync(int id)
         {
             var produto = await _produtoRepositorio.ListarPorIdAsync(id);
-            if (produto == null) 
+            if (produto == null || produto.Ativo == false) 
             { 
                 _logger.LogWarning($"Produto com Id {id} não encontrado.");
                 return null;
@@ -79,6 +99,11 @@ namespace InvestimentosCaixa.Api.Dominio.Servicos
             return _produtoMapper.ToDtoResponse(produto);
         }
 
+        /// <summary>
+        /// Listar todos os produtos ativos pelo nome
+        /// </summary>
+        /// <param name="nomeProduto">Nome do produto</param>
+        /// <returns>Lista de produtos ativos pelo nome</returns>
         public async Task<ProdutoDTOResponse?> ListarProdutoAtivoPorNomeAsync(string nomeProduto)
         {
             var produtoDb = await _produtoRepositorio.ListarProdutoPorNome(nomeProduto);
@@ -93,6 +118,12 @@ namespace InvestimentosCaixa.Api.Dominio.Servicos
             return _produtoMapper.ToDtoResponse(produtoDb);
         }
 
+        /// <summary>
+        /// Exibe produto ativo por tipo
+        /// </summary>
+        /// <param name="tipoProduto">Tipo do produto <see cref="TipoProdutoEnum"/></param>
+        /// <returns>Produto encontrado</returns>
+        /// <exception cref="ConvertEnumException">Lança exceção quando tipo informado não está mapeado em <see cref="TipoProdutoEnum"/></exception>
         public async Task<ProdutoDTOResponse?> ListarProdutoAtivoPorTipoAsync(string tipoProduto)
         {
             if (!Enum.TryParse(tipoProduto, out TipoProdutoEnum TipoProduto))
@@ -114,6 +145,11 @@ namespace InvestimentosCaixa.Api.Dominio.Servicos
             return _produtoMapper.ToDtoResponse(produtoDb);
         }
 
+        /// <summary>
+        /// Listar todos os produtos ativos por perfil de cliente
+        /// </summary>
+        /// <param name="perfil">Perfil de cliente</param>
+        /// <returns>Lista de produtos ativos que corres</returns>
         public async Task<List<ProdutoDTOResponse>> ListarProdutosAtivosPorPerfilAsync(int idPerfil)
         {
             var produtos = await this.ListarTodosProdutosAtivosAsync();
@@ -132,6 +168,10 @@ namespace InvestimentosCaixa.Api.Dominio.Servicos
                        .ToList();
         }
 
+        /// <summary>
+        /// Listar todos os produtos ativos
+        /// </summary>
+        /// <returns>Lista de produtos ativos</returns>
         public async Task<List<ProdutoDTOResponse>?> ListarTodosProdutosAtivosAsync()
         {
             var produtos = await _produtoRepositorio.ListarTodosAsync();
@@ -147,12 +187,17 @@ namespace InvestimentosCaixa.Api.Dominio.Servicos
             return _produtoMapper.ToDtoResponseList(produtosAtivos);
         }
 
-        public async Task<bool> RemoverProdutoAsync(int idAluno)
+        /// <summary>
+        /// Remoção lógica do produto pelo Id
+        /// </summary>
+        /// <param name="idProduto">Id do produto</param>
+        /// <returns>Confirmação de deleção lógica do produto</returns>
+        public async Task<bool> RemoverProdutoAsync(int idProduto)
         {
-            var produtoDb = await _produtoRepositorio.ListarPorIdAsync(idAluno);
+            var produtoDb = await _produtoRepositorio.ListarPorIdAsync(idProduto);
             if (produtoDb == null)
             {
-                _logger.LogWarning($"Produto com Id {idAluno} não encontrado para remoção.");
+                _logger.LogWarning($"Produto com Id {idProduto} não encontrado para remoção.");
                 return false;
             }
 

@@ -7,6 +7,9 @@ using InvestimentosCaixa.Api.Dominio.Servicos.Interfaces;
 
 namespace InvestimentosCaixa.Api.Dominio.Servicos
 {
+    /// <summary>
+    /// Serviço responsável por gerenciar simulações de investimento.
+    /// </summary>
     public class SimulacaoServico : ISimulacaoServico
     {
         private readonly ISimulacaoRepositorio _simulacaoRepositorio;
@@ -21,6 +24,10 @@ namespace InvestimentosCaixa.Api.Dominio.Servicos
             _logger = logger;
         }
 
+        /// <summary>
+        /// Listar simulações de produtos efetuados no dia
+        /// </summary>
+        /// <returns>Lista com simulações efetuadas no dia</returns>
         public async Task<List<SimulacaoProdutoDiaDTOResponse>?> ListarSimulacoesDeProdutosPorDia()
         {
             var simulacoes = await _simulacaoRepositorio.ListarTodosAsync();
@@ -34,6 +41,10 @@ namespace InvestimentosCaixa.Api.Dominio.Servicos
             return _simulacaoMapper.ToDtoProdutoDiaList(simulacoes);
         }
 
+        /// <summary>
+        /// Listar todas as simulações realizadas pelos clientes
+        /// </summary>
+        /// <returns>Lista todas as simulações realizadas pelos clientes</returns>
         public async Task<List<SimulacaoDTOResponse>?> ListarSimulacoesInvestimentos()
         {
             var simulacoes = await _simulacaoRepositorio.ListarTodosAsync();
@@ -49,6 +60,12 @@ namespace InvestimentosCaixa.Api.Dominio.Servicos
             return _simulacaoMapper.ToDtoResponseList(simulacoes);
         }
 
+        /// <summary>
+        /// Realiza a simulação de investimento para um produto e cliente específico
+        /// </summary>
+        /// <param name="produto">Classe de produto utilizada para cadastro de investimento</param>
+        /// <param name="simulacaoInvestimento">Informações para cadastro de simulações como Id do cliente, prazo, valor e rentabilidade</param>
+        /// <returns>Simulação efetuada</returns>
         public async Task<SimulacaoInvestimentoDTOResponse?> SimularInvestimento(
             Produto produto, 
             SimulacaoInvestimentoDTORequest simulacaoInvestimento)

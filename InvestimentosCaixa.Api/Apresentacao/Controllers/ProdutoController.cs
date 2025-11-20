@@ -12,7 +12,7 @@ using Microsoft.AspNetCore.Mvc;
 namespace InvestimentosCaixa.Api.Apresentacao.Controllers
 {
     /// <summary>
-    /// Controller de Produtos
+    /// Fornece endpoints para gerenciar produtos, incluindo a criação, atualização, deleção lógica e recuperação de produtos.
     /// </summary>
     [ApiController]
     public class ProdutoController : ControllerBase
@@ -29,7 +29,7 @@ namespace InvestimentosCaixa.Api.Apresentacao.Controllers
         /// <summary>
         /// Retornar todos os produtos cadastrados e ativos
         /// </summary>
-        /// <returns>Lista de produtos</returns>
+        /// <returns>Lista de produtos ativos</returns>
         [Authorize]
         [HttpGet("listar-produtos")]
         public async Task<ActionResult> ListarTodosProdutos()
@@ -101,8 +101,8 @@ namespace InvestimentosCaixa.Api.Apresentacao.Controllers
                     _logger.LogWarning($"Já existe um produto {produtoDto.Nome} cadastrado com esse nome.");
                     return BadRequest("Já existe um produto cadastrado com esse nome.");
                 }
-                await _produtoServico.AdicionarProdutoAsync(produtoDto);
-                return Ok("Produto cadastrado com sucesso!");
+                var idProduto = await _produtoServico.AdicionarProdutoAsync(produtoDto);
+                return Created("cadastrar-produto", new { idProduto });
             }
             catch(ConvertEnumException e)
             {
@@ -183,7 +183,7 @@ namespace InvestimentosCaixa.Api.Apresentacao.Controllers
                 }
 
                 _logger.LogInformation($"Produto com ID {id} deletado com sucesso.");
-                return Ok("Produto deletado com sucesso!");
+                return Ok(new { deletado = resultado });
             }
             catch (Exception e)
             {
@@ -192,13 +192,27 @@ namespace InvestimentosCaixa.Api.Apresentacao.Controllers
             }
         }
 
+        /// <summary>
+        /// Recupera uma lista de produtos recomendados para o perfil especificado.
+        /// </summary>
+        /// <returns>Lista de produtos recomendados para o perfil especificado.</returns>
+        /// <response code = "200"> Listagem de produtos recomendados </response>
+        /// <response code = "204"> Nenhuma listagem encontrada </response>
+        /// <response code = "500"> Erro interno no servidor </response>
         [Telemetria]
         [Authorize]
         [HttpGet("produtos-recomendados/{perfil}")]
-        public async Task<ActionResult> ListarProdutosRecomendadosPorPerfil(int perfil)
+        public async Task<ActionResult> ListarProdutosRecomendadosPorPerfil(string perfil)
         {
             try{
-                var produtosRecomendados = await _produtoServico.ListarProdutosAtivosPorPerfilAsync(perfil);
+                if (!Enum.IsDefined(typeof(PerfilRiscoClienteEnum), perfil))
+                {
+                    throw new ConvertEnumException(typeof(PerfilRiscoClienteEnum), perfil);
+                }
+
+                int riscoProduto = (int)Enum.Parse(typeof(PerfilRiscoClienteEnum), perfil, ignoreCase: true);
+
+                var produtosRecomendados = await _produtoServico.ListarProdutosAtivosPorPerfilAsync(riscoProduto);
 
                 if (!produtosRecomendados.Any())
                 {
@@ -210,9 +224,14 @@ namespace InvestimentosCaixa.Api.Apresentacao.Controllers
                 return Ok(produtosRecomendados);
 
             }
+            catch (ConvertEnumException error)
+            {
+                _logger.LogError($"Erro ao converter risco de produto para enum: {error.Message}");
+                return BadRequest(error.Message);
+            }
             catch(Exception erro)
             {
-                _logger.LogError($"Erro ao listar produtos recomendados para o perfil {((PerfilRiscoClienteEnum)perfil).ToString()}: {erro.Message}");
+                _logger.LogError($"Erro ao listar produtos recomendados para o perfil {perfil}: {erro.Message}");
                 return StatusCode(500, "Erro interno no servidor.");
             }
         }

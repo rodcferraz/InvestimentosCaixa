@@ -5,7 +5,7 @@ namespace InvestimentosCaixa.Testes.TestesIntegracao.Controllers.InvestimentoCon
 {
     public class InvestimentoServicoErroFake : IInvestimentoServico
     {
-        public Task<int> CadastrarInvestimentoAsync(InvestimentoDTOBaseRequest request)
+        public Task<InvestimentoDTOResponse> CadastrarInvestimentoAsync(InvestimentoDTOBaseRequest request)
         {
             throw new Exception("Erro simulado no serviço");
         }

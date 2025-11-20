@@ -4,8 +4,14 @@ using InvestimentosCaixa.Api.Dominio.Mappers.Interfaces;
 
 namespace InvestimentosCaixa.Api.Dominio.Mappers
 {
+    /// <summary>
+    /// Realiza o mapeamento entre a entidade Simulacao e seus respectivos DTOs.
+    /// </summary>
     public class SimulacaoMapper : ISimulacaoMapper
     {
+        /// <summary>
+        /// Realiza o mapeamento de uma entidade Simulacao para um DTO de resposta SimulacaoDTOResponse.
+        /// </summary>
         public SimulacaoDTOResponse ToDtoResponse(Simulacao simulacao)
         {
             var taxaMensal = simulacao.Produto.Rentabilidade / 12;
@@ -24,6 +30,9 @@ namespace InvestimentosCaixa.Api.Dominio.Mappers
             };
         }
 
+        /// <summary>
+        /// Realiza o mapeamento de uma lista de entidades Simulacao para uma lista de DTOs de resposta SimulacaoDTOResponse.
+        /// </summary>
         public List<SimulacaoDTOResponse> ToDtoResponseList(IEnumerable<Simulacao> clientes)
         {
             return clientes != null ? 
@@ -33,6 +42,9 @@ namespace InvestimentosCaixa.Api.Dominio.Mappers
                         new List<SimulacaoDTOResponse>();
         }
 
+        /// <summary>
+        /// Realiza o mapeamento de uma lista de entidades Simulacao para uma lista de DTOs de resposta SimulacaoProdutoDiaDTOResponse agrupados por produto e dia.
+        /// </summary>
         public List<SimulacaoProdutoDiaDTOResponse> ToDtoProdutoDiaList(List<Simulacao> simulacoes)
         {
            return simulacoes
