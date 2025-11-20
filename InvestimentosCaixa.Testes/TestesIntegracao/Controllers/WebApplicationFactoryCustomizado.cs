@@ -29,14 +29,14 @@ namespace InvestimentosCaixa.Testes.TestesIntegracao.Controllers
                 if (descriptor != null)
                     services.Remove(descriptor);
 
-                // === 1) Criar conexão única e abrir ===
+                // Criar conexão única e abrir
                 var connection = new SqliteConnection("DataSource=:memory:");
                 connection.Open();
 
-                // === 2) Registrar conexão como Singleton ===
+                // Registrar conexão como Singleton
                 services.AddSingleton(connection);
 
-                // === 3) Usar essa mesma conexão no DbContext ===
+                // Usar essa mesma conexão no DbContext
                 services.AddDbContext<InvestimentosCaixaDbContext>((provider, options) =>
                 {
                     var conn = provider.GetRequiredService<SqliteConnection>();
@@ -54,68 +54,15 @@ namespace InvestimentosCaixa.Testes.TestesIntegracao.Controllers
                         .Build();
                 });
 
-                //ReplaceService<IClienteMapper, ClienteMapperFake>(services);
-                //ReplaceService<ISimulacaoMapper, SimulacaoMapperFake>(services);
-                //ReplaceService<ISimulacaoServico, SimulacaoServicoNuloFake>(services);
-                //ReplaceService<ISimulacaoServico, SimulacaoServicoErroFake>(services);
-
-                // === 4) Criar tabelas ===
+                //Criar tabelas
                 var sp = services.BuildServiceProvider();
                 using var scope = sp.CreateScope();
                 var db = scope.ServiceProvider.GetRequiredService<InvestimentosCaixaDbContext>();
-                db.Database.EnsureCreated(); // Agora cria TUDO corretamente
+                db.Database.EnsureCreated();
             });
-            //builder.ConfigureServices(services =>
-            //{
-            //    // Remove DB real
-            //    var dbDescriptor = services.SingleOrDefault(
-            //        d => d.ServiceType == typeof(DbContextOptions<InvestimentosCaixaDbContext>)
-            //    );
-
-            //    if (dbDescriptor != null)
-            //        services.Remove(dbDescriptor);
-
-            //    // Adiciona DB em memória
-            //    services.AddDbContext<InvestimentosCaixaDbContext>((provider, options) =>
-            //    {
-            //        var conn = provider.GetRequiredService<SqliteConnection>();
-            //        options.UseSqlite(conn);
-            //    });
-
-            //    // Substituir autenticação para permitir testes com [Authorize]
-            //    services.AddAuthentication("Teste")
-            //            .AddScheme<AuthenticationSchemeOptions, TesteAuthHandler>("Teste", null);
-
-            //    // Substituir Auth real como padrão
-            //    services.PostConfigureAll<AuthorizationOptions>(options =>
-            //    {
-            //        options.DefaultPolicy = new AuthorizationPolicyBuilder("Teste")
-            //                .RequireAuthenticatedUser()
-            //                .Build();
-            //    });
-
-            //    ReplaceService<IClienteMapper, ClienteMapperFake>(services);
-            //    ReplaceService<ISimulacaoMapper, SimulacaoMapperFake>(services);
-            //    // ReplaceService<ITelemetriaServico, TelemetriaFake>(services);
-
-
-            //    // Criar banco
-            //    //builder.Configure(app =>
-            //    //{
-            //    //    using var scope = app.ApplicationServices.CreateScope();
-            //    //    var db = scope.ServiceProvider.GetRequiredService<InvestimentosCaixaDbContext>();
-            //    //    db.Database.OpenConnection();
-            //    //    db.Database.EnsureCreated();
-            //    //});
-            //    // === CRIAR BANCO AQUI ===
-            //    var sp = services.BuildServiceProvider();
-            //    using var scope = sp.CreateScope();
-            //    var db = scope.ServiceProvider.GetRequiredService<InvestimentosCaixaDbContext>();
-            //    db.Database.EnsureCreated(); // Agora cria TUDO corretamente
-            //});
         }
 
-        public  void ReplaceService<T, TImpl>(IServiceCollection services)
+        public void ReplaceService<T, TImpl>(IServiceCollection services)
             where T : class
             where TImpl : class, T
         {

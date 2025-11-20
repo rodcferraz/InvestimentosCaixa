@@ -27,10 +27,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="Dominio\Factories\Interfaces\" />
-  </ItemGroup>
-
-  <ItemGroup>
     <None Include="TestesIntegracao\Controllers\SimulacaoControllerTestes\SimularInvestimentoTestes.cs" />
   </ItemGroup>
 

@@ -111,9 +111,6 @@ namespace InvestimentosCaixa.Api
             builder.Services.AddScoped<IGerarPerfilRiscoClienteFactory,
                 GerarPerfilRiscoClienteFactory>();
 
-            // Filtro
-            builder.Services.AddScoped<ValidarSimulacaoFiltro>();
-
             // ➤ JWT Auth
             builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
                 .AddJwtBearer(options =>

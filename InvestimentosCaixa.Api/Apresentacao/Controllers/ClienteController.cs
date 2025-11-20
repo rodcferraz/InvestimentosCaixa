@@ -48,7 +48,6 @@ namespace InvestimentosCaixa.Api.Apresentacao.Controllers
                 _logger.LogError($"Erro ao listar clientes: {e.Message}");
                 return StatusCode(500, "Ocorreu um erro interno no servidor.");
             }
-
         }
 
         [Authorize]
