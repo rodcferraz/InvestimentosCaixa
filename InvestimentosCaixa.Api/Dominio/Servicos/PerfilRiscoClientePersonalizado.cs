@@ -48,6 +48,16 @@ namespace InvestimentosCaixa.Api.Dominio.Servicos
             var totalInvestido = investimentosCliente.Sum(x => x.Valor);
             var quantidadeMovimentacoes = investimentosCliente.Count();
 
+            if (totalInvestido == 0 && quantidadeMovimentacoes == 0)
+            {
+                if (cliente.Liquidez == (int)PerfilRiscoClienteEnum.Conservador)
+                    return (PerfilRiscoClienteEnum.Conservador, 20);
+                else if (cliente.Liquidez == (int)PerfilRiscoClienteEnum.Moderado)
+                    return (PerfilRiscoClienteEnum.Moderado, 60);
+                else
+                    return (PerfilRiscoClienteEnum.Agressivo, 80);
+            }
+
             var pontuacaoCarteira = _perfilPontuacaoClienteServico.GerarPerfilCarteiraCliente(totalInvestido);
             var pontuacaoMovimentacoes = _perfilPontuacaoClienteServico.GerarPerfilMovimentacoesCliente(quantidadeMovimentacoes);
             var pontuacaoLiquidez =_perfilPontuacaoClienteServico.GerarPerfilLiquidezCliente((PerfilRiscoClienteEnum) cliente.Liquidez);

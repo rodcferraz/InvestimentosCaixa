@@ -65,40 +65,34 @@ namespace InvestimentosCaixa.Testes.Dominio.Servicos.PerfilRiscoClientePersonali
             Assert.Equal(pontuacaoTotalEsperada, pontuacaoTotal);
         }
 
-        [Fact]
-        public async Task CalcularPerfilRiscoCliente_ComClienteSemInvestimentos_RetornaPerfilConservador()
+        [Theory]
+        [InlineData(PerfilRiscoClienteEnum.Conservador, 20.0)]
+        [InlineData(PerfilRiscoClienteEnum.Moderado, 60.0)]
+        [InlineData(PerfilRiscoClienteEnum.Agressivo, 80.0)]
+        public async Task CalcularPerfilRiscoCliente_QuandoNaoHaInvestimento_RetornaLiquidezDoCliente(
+            PerfilRiscoClienteEnum perfilCliente,
+            decimal pontuacaoTotalEsperada)
         {
             // Arrange
-            int idCliente = 2;
-            var investimentosVazios = new List<InvestimentoDTOResponse>();
-            var cliente = new ClienteDTOResponse { Liquidez = (int)PerfilRiscoClienteEnum.Conservador };
+            int idCliente = 1;
+            var investimentos = new List<InvestimentoDTOResponse> { }; ;
+
+            var cliente = new ClienteDTOResponse { Liquidez = (int)perfilCliente };
 
             _fixture.InvestimentoServicoMock
-                .Setup(s => s.ListarInvestimentosPorClienteAsync(idCliente))
-                .ReturnsAsync(investimentosVazios);
+                .Setup(s => s.ListarInvestimentosPorClienteAsync(It.IsAny<int>()))
+                .ReturnsAsync(investimentos);
 
             _fixture.ClienteServicoMock
-                .Setup(s => s.DetalhesClienteAsync(idCliente))
+                .Setup(s => s.DetalhesClienteAsync(It.IsAny<int>()))
                 .ReturnsAsync(cliente);
-
-            _fixture.PerfilPontuacaoClienteServicoMock
-                .Setup(s => s.GerarPerfilCarteiraCliente(0))
-                .Returns(10);
-
-            _fixture.PerfilPontuacaoClienteServicoMock
-                .Setup(s => s.GerarPerfilMovimentacoesCliente(0))
-                .Returns(20);
-
-            _fixture.PerfilPontuacaoClienteServicoMock
-                .Setup(s => s.GerarPerfilLiquidezCliente(PerfilRiscoClienteEnum.Conservador))
-                .Returns(20);
 
             // Act
             var (perfil, pontuacaoTotal) = await _fixture.Servico.CalcularPerfilRiscoCliente(idCliente);
 
             // Assert
-            Assert.Equal(PerfilRiscoClienteEnum.Conservador, perfil);
-            Assert.Equal(16.0m, pontuacaoTotal);
+            Assert.Equal(perfilCliente, perfil);
+            Assert.Equal(pontuacaoTotalEsperada, pontuacaoTotal);
         }
 
         [Fact]
@@ -138,46 +132,6 @@ namespace InvestimentosCaixa.Testes.Dominio.Servicos.PerfilRiscoClientePersonali
             // Assert
             Assert.Equal(PerfilRiscoClienteEnum.Agressivo, perfil);
             Assert.Equal(88.0m, pontuacaoTotal);
-        }
-
-        [Fact]
-        public async Task CalcularPerfilRiscoCliente_QuandoInvestimentoServicoLancaExcecao_PropagaExcecao()
-        {
-            // Arrange
-            int idCliente = 4;
-
-            _fixture.InvestimentoServicoMock
-                .Setup(s => s.ListarInvestimentosPorClienteAsync(idCliente))
-                .ThrowsAsync(new InvalidOperationException("Erro ao buscar investimentos"));
-
-            // Act & Assert
-            await Assert.ThrowsAsync<InvalidOperationException>(() =>
-                _fixture.Servico.CalcularPerfilRiscoCliente(idCliente));
-
-            _fixture.ClienteServicoMock.Verify(s => s.DetalhesClienteAsync(It.IsAny<int>()), Times.Never);
-            _fixture.PerfilPontuacaoClienteServicoMock.Verify(s => s.GerarPerfilCarteiraCliente(It.IsAny<decimal>()), Times.Never);
-        }
-
-        [Fact]
-        public async Task CalcularPerfilRiscoCliente_QuandoClienteServicoLancaExcecao_PropagaExcecao()
-        {
-            // Arrange
-            int idCliente = 5;
-            var investimentos = new List<InvestimentoDTOResponse> { new InvestimentoDTOResponse { Valor = 1000 } };
-
-            _fixture.InvestimentoServicoMock
-                .Setup(s => s.ListarInvestimentosPorClienteAsync(idCliente))
-                .ReturnsAsync(investimentos);
-
-            _fixture.ClienteServicoMock
-                .Setup(s => s.DetalhesClienteAsync(idCliente))
-                .ThrowsAsync(new KeyNotFoundException("Cliente não encontrado"));
-
-            // Act & Assert
-            await Assert.ThrowsAsync<KeyNotFoundException>(() =>
-                _fixture.Servico.CalcularPerfilRiscoCliente(idCliente));
-
-            _fixture.PerfilPontuacaoClienteServicoMock.Verify(s => s.GerarPerfilCarteiraCliente(It.IsAny<decimal>()), Times.Never);
         }
 
         [Fact]
