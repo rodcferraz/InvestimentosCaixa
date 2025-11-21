@@ -26,7 +26,19 @@ namespace InvestimentosCaixa.Api.Aplicacao.DTOs.Simulacoes
         public int PrazoMeses { get; set; }
 
         /// <summary>
-        /// Tipo de produto que será realizada a simulação
+        /// <summary>
+        /// Tipo de produto
+        /// Valores: 
+        /// TesouroSelic,
+        /// CDB,
+        /// LCI,
+        /// LCA,
+        /// TesouroIPCA,
+        /// Fundo,
+        /// Acoes,
+        /// ETFs,
+        /// Criptomoeda
+        /// </summary>
         /// </summary>
         [Required(ErrorMessage = $"Campo {nameof(TipoProduto)} não informado")]
         public string TipoProduto { get; set; }
