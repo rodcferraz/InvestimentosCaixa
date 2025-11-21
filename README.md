@@ -1,4 +1,4 @@
-# Projeto API – Guia de Instalação, Execução e Uso
+# Projeto Investimento Caixa – Guia de Instalação, Execução e Uso
 
 Este documento descreve como **restaurar o projeto**, **executá-lo localmente via Docker** e **acessar o Swagger** para testes dos endpoints.
 
