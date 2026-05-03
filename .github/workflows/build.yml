@@ -43,5 +43,6 @@ jobs:
         shell: powershell
         run: |
           ${{ runner.temp }}\scanner\dotnet-sonarscanner begin /k:"rodcferraz_InvestimentosCaixa" /o:"rodcferraz" /d:sonar.token="${{ secrets.SONAR_TOKEN }}"
-          dotnet build
+          dotnet build InvestimentosCaixa.Api/InvestimentosCaixa.Api.csproj
+          dotnet test InvestimentosCaixa.Testes/InvestimentosCaixa.Testes.csproj
           ${{ runner.temp }}\scanner\dotnet-sonarscanner end /d:sonar.token="${{ secrets.SONAR_TOKEN }}"
