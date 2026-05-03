@@ -42,19 +42,9 @@ jobs:
     SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
   shell: powershell
   run: |
-    ${{ runner.temp }}\scanner\dotnet-sonarscanner begin `
-      /k:"rodcferraz_InvestimentosCaixa" `
-      /o:"rodcferraz" `
-      /d:sonar.token="${{ secrets.SONAR_TOKEN }}" `
-      /d:sonar.cs.opencover.reportsPaths="**/coverage.opencover.xml"
-
+    ${{ runner.temp }}\scanner\dotnet-sonarscanner begin /k:"rodcferraz_InvestimentosCaixa" /o:"rodcferraz" /d:sonar.token="${{ secrets.SONAR_TOKEN }}" /d:sonar.cs.opencover.reportsPaths="**/coverage.opencover.xml"
+    
     dotnet build InvestimentosCaixa.Api/InvestimentosCaixa.Api.csproj
+    dotnet test InvestimentosCaixa.Testes/InvestimentosCaixa.Testes.csproj --no-build /p:CollectCoverage=true /p:CoverletOutputFormat=opencover /p:CoverletOutput=./coverage/
 
-    dotnet test InvestimentosCaixa.Testes/InvestimentosCaixa.Testes.csproj `
-      --no-build `
-      /p:CollectCoverage=true `
-      /p:CoverletOutputFormat=opencover `
-      /p:CoverletOutput=./coverage/
-
-    ${{ runner.temp }}\scanner\dotnet-sonarscanner end `
-      /d:sonar.token="${{ secrets.SONAR_TOKEN }}"
+    ${{ runner.temp }}\scanner\dotnet-sonarscanner end /d:sonar.token="${{ secrets.SONAR_TOKEN }}"
